@@ -1,0 +1,63 @@
+import std.*;
+
+
+void FullyConnectedNeuralNetwork(const int inputSize, const int[] layerSizes){
+    print("<FullyConnectedNeuralNetwork>: Creating Neural Network with input size: {" + inputSize + "} and shape: { ");
+    for(int i = 0; i < layerSizes.size; i++){
+        print(layerSizes[i] + " ");
+    }
+    println("}");
+
+    /***************************** 
+     * FCNN Stats
+    *****************************/
+    println("<FullyConnectedNeuralNetwork>: Creating network skeleton...");
+    int numLayers = layerSizes.size;
+
+    println("    - <FullyConnectedNeuralNetwork>: Allocating channels & weights...");
+    chan<double>[][][] connections = new chan<double>[numLayers][0][0];
+    /* 
+    double[][][] w = new double[numLayers][0][0];
+    double[][][] wN = new double[numLayers][0][0];
+    double[][] b = new double[numLayers][0];
+    double[][] bN = new double[numLayers][0];
+    double[][] s = new double[numLayers][0];
+    double[][] y = new double[numLayers][0];
+    */
+
+    for(int i = 0; i < numLayers; i++){
+        // Dimensions
+        int lowerSize = (i == 0) ? inputSize : layerSizes[i - 1];
+        int upperSize = layerSizes[i];
+        // Allocations
+        //connections[i] = new chan<double>[lowerSize][upperSize];
+        /* 
+        w[i] = new double[lowerSize][upperSize];
+        wN[i] = new double[lowerSize][upperSize];
+        b[i] = new double[upperSize];
+        bN[i] = new double[upperSize];
+        s[i] = new double[upperSize];
+        y[i] = new double[upperSize];
+        */
+    }
+
+    /*
+    println("    - <FullyConnectedNeuralNetwork>: Checking allocations");
+    println("    - <FullyConnectedNeuralNetwork>: connections: ");
+    for(int i = 0; i < connections.size; i++){
+        println("    - Layer " + i + ": { " + connections[i].size + " , " + connections[i][0].size + " }");
+    }
+    */
+}
+
+public void main(string[] args){
+   
+
+    int inputSize = 728;
+    int numLayers = 3;
+    
+    int[] layers = new int[numLayers];
+    layers[0] = 40; layers[0] = 20; layers[2] = 10;
+
+    FullyConnectedNeuralNetwork(inputSize, layers);
+}

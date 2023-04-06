@@ -1,0 +1,5 @@
+Page 91-94:
+	- Cannot use dashes in naming convention ("carry-in", "carry-out")
+
+Page 91:
+	- One bit adder is wired incorrectly. (look at the 2 delta gates)

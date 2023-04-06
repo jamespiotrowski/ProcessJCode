@@ -1,0 +1,309 @@
+import std.*;
+
+void notGate(chan<boolean>.read in, chan<boolean>.write out) {
+  boolean x; 
+  x = in.read(); 
+  out.write(!x);
+} 
+
+void orGate(chan<boolean>.read in1, chan<boolean>.read in2, chan<boolean>.write out) {
+	boolean x,y;
+	par {
+		x = in1.read();
+		y = in2.read(); 
+	}
+	out.write(x || y);
+}
+
+void andGate(chan<boolean>.read in1, chan<boolean>.read in2, chan<boolean>.write out) {
+  boolean x,y;
+  par {
+    x = in1.read();
+    y = in2.read(); 
+  }
+  out.write(x && y);
+}
+
+void nandGate(chan<boolean>.read in1, chan<boolean>.read in2, chan<boolean>.write out) {
+  chan<boolean> a;
+  par{
+    andGate(in1, in2, a.write);
+    notGate(a.read, out);
+  }
+}
+
+void deltaGate(chan<boolean>.read in, chan<boolean>.write out1, chan<boolean>.write out2) {
+  boolean x;
+  x = in.read(); 
+  par{
+    out1.write(x);
+    out2.write(x);
+  }
+}
+
+void xorGate(chan<boolean>.read in1, chan<boolean>.read in2, chan<boolean>.write out) {
+  chan<boolean> a, b, c, d , e, f, g, h, i;
+  par{
+    deltaGate(in1, a.write, b.write);
+    deltaGate(in2, c.write, d.write);
+    nandGate(b.read, c.read, e.write);
+    deltaGate(e.read, f.write, g.write);
+    nandGate(a.read, f.read, h.write);
+    nandGate(g.read, d.read, i.write);
+    nandGate(h.read, i.read, out);
+  } 
+}
+
+void oneBitAdder(chan<boolean>.read in1, chan<boolean>.read in2, chan<boolean>.read carryIn, chan<boolean>.write result, chan<boolean>.write carryOut) {
+  chan<boolean> a, b, c, d, e, f, g, h, i, j, k;
+  par{
+    deltaGate(in1, a.write, b.write);
+    deltaGate(in2, c.write, d.write);
+    xorGate(a.read, c.read, e.write);
+    deltaGate(e.read, f.write, g.write);
+    deltaGate(carryIn, h.write, i.write);
+    xorGate(f.read, h.read, result);
+    andGate(g.read, i.read, j.write);
+    andGate(b.read, d.read, k.write);
+    orGate(j.read, k.read, carryOut);
+  } 
+}
+
+void fourBitAdder(
+    chan<boolean>.read inA0, chan<boolean>.read inA1, chan<boolean>.read inA2, chan<boolean>.read inA3,
+    chan<boolean>.read inB0, chan<boolean>.read inB1, chan<boolean>.read inB2, chan<boolean>.read inB3,
+    chan<boolean>.read carryIn, 
+    chan<boolean>.write result0, chan<boolean>.write result1, chan<boolean>.write result2, chan<boolean>.write result3, 
+    chan<boolean>.write carryOut
+  ) { 
+  chan<boolean> a, b, c; 
+  par{
+    oneBitAdder(inA0, inB0, carryIn, result0, a.write);
+    oneBitAdder(inA1, inB1, a.read, result1, b.write);
+    oneBitAdder(inA2, inB2, b.read, result2, c.write);
+    oneBitAdder(inA3, inB3, c.read, result3, carryOut);
+  }
+}
+
+void eightBitAdder(
+    chan<boolean>.read inA0, chan<boolean>.read inA1, chan<boolean>.read inA2, chan<boolean>.read inA3
+    , chan<boolean>.read inA4, chan<boolean>.read inA5, chan<boolean>.read inA6, chan<boolean>.read inA7
+    , chan<boolean>.read inB0, chan<boolean>.read inB1, chan<boolean>.read inB2, chan<boolean>.read inB3
+    , chan<boolean>.read inB4, chan<boolean>.read inB5, chan<boolean>.read inB6, chan<boolean>.read inB7
+    , chan<boolean>.read carryIn               
+    , chan<boolean>.write result0, chan<boolean>.write result1, chan<boolean>.write result2, chan<boolean>.write result3
+    , chan<boolean>.write result4, chan<boolean>.write result5, chan<boolean>.write result6, chan<boolean>.write result7
+    , chan<boolean>.write carryOut
+  ) {
+  chan<boolean> a;
+  par{
+    fourBitAdder(
+      inA0, inA1, inA2, inA3,
+      inB0, inB1, inB2, inB3,
+      carryIn,
+      result0, result1, result2, result3,
+      a.write
+    );
+
+    fourBitAdder(
+      inA4, inA5, inA6, inA7,
+      inB4, inB5, inB6, inB7,
+      a.read,
+      result4, result5, result6, result7,
+      carryOut
+    );
+  }
+}
+
+/**** Not in book - used for tesing ****/
+
+void add(boolean[] num1, boolean[] num2){
+  string s = "Adding: ";
+  for(int i = num1.size - 1; i >= 0 ; i--){
+    if(num1[i]){ s = s + "1"; } else{ s = s + "0"; }
+  }
+  s = s + " + ";
+  for(int i = num2.size - 1; i >= 0 ; i--){
+    if(num2[i]){ s = s + "1"; } else{ s = s + "0"; }
+  }
+  println(s);
+
+  chan<boolean> inA0, inA1, inA2, inA3, inA4, inA5, inA6, inA7
+    , inB0, inB1, inB2, inB3, inB4, inB5, inB6, inB7
+    , out0, out1, out2, out3, out4, out5, out6, out7
+    , carryIn, carryOut;
+
+  boolean results[];
+  boolean cOut;
+
+  switch(num1.size){
+    case(1) : {
+      results = new boolean[1];
+      par{
+        inA0.write.write(num1[0]);
+        inB0.write.write(num2[0]);
+        carryIn.write(false);
+        oneBitAdder(inA0.read, inB0.read, carryIn.read, out0.write, carryOut.write);
+        results[0] = out0.read.read();
+        cOut = carryOut.read.read();
+      }
+      break;
+    }
+    case(4) : {
+      results = new boolean[4];
+      par{
+        inA0.write.write(num1[0]); inA1.write.write(num1[1]); inA2.write.write(num1[2]); inA3.write.write(num1[3]);
+        inB0.write.write(num2[0]); inB1.write.write(num2[1]); inB2.write.write(num2[2]); inB3.write.write(num2[3]);
+        carryIn.write(false);
+        fourBitAdder(
+          inA0.read, inA1.read, inA2.read, inA3.read 
+          , inB0.read, inB1.read, inB2.read, inB3.read 
+          , carryIn.read
+          , out0.write, out1.write, out2.write, out3.write
+          , carryOut.write
+        );
+        results[0] = out0.read.read();
+        results[1] = out1.read.read();
+        results[2] = out2.read.read();
+        results[3] = out3.read.read();
+        cOut = carryOut.read.read();
+      }
+      break;
+    }
+    case(8) : {
+      results = new boolean[8];
+      par{
+        inA0.write.write(num1[0]); inA1.write.write(num1[1]); inA2.write.write(num1[2]); inA3.write.write(num1[3]);
+        inA4.write.write(num1[4]); inA5.write.write(num1[5]); inA6.write.write(num1[6]); inA7.write.write(num1[7]);
+        inB0.write.write(num2[0]); inB1.write.write(num2[1]); inB2.write.write(num2[2]); inB3.write.write(num2[3]);
+        inB4.write.write(num2[4]); inB5.write.write(num2[5]); inB6.write.write(num2[6]); inB7.write.write(num2[7]);
+        carryIn.write(false);
+        eightBitAdder(
+          inA0.read, inA1.read, inA2.read, inA3.read
+          , inA4.read, inA5.read, inA6.read, inA7.read
+          , inB0.read, inB1.read, inB2.read, inB3.read 
+          , inB4.read, inB5.read, inB6.read, inB7.read 
+          , carryIn.read
+          , out0.write, out1.write, out2.write, out3.write
+          , out4.write, out5.write, out6.write, out7.write
+          , carryOut.write
+        );
+        results[0] = out0.read.read();
+        results[1] = out1.read.read();
+        results[2] = out2.read.read();
+        results[3] = out3.read.read();
+        results[4] = out4.read.read();
+        results[5] = out5.read.read();
+        results[6] = out6.read.read();
+        results[7] = out7.read.read();
+        cOut = carryOut.read.read();
+      }
+      break;
+    }
+    default : {
+      println("Error in Add Process.");
+      break;
+    }
+  }
+
+  s = "Result: ";
+  for(int i = results.size - 1; i >= 0 ; i--){
+    if(results[i]){ s = s + "1"; } else{ s = s + "0"; }
+  }
+  s = s + " (Carry Out: ";
+  if(cOut){ s = s + "1)"; } else{ s = s + "0)";}
+  println(s);
+}
+
+public void main(string[] args){
+
+  string test;
+
+  test = //"xor";
+    //"one";
+    //"four";
+    "eight";
+
+  switch(test){
+
+    case("xor") : {
+      /* Testing XOR gate */ 
+      chan<boolean> a, b, c;
+      boolean result;
+      par{
+        xorGate(a.read, b.read, c.write);
+        a.write.write(false);
+        b.write.write(false);
+        result = c.read();
+      }
+      println("Result: " + result);
+      break;
+    }
+
+    case("one") : {
+      boolean[] num1 = new boolean[1];
+      boolean[] num2 = new boolean[1];
+
+      num1[0] = false;
+      num2[0] = false;
+      add(num1,num2);
+      
+      num1[0] = true;
+      num2[0] = false;
+      add(num1,num2);
+      
+      num1[0] = false;
+      num2[0] = true;
+      add(num1,num2);
+      
+      num1[0] = true;
+      num2[0] = true;
+      add(num1,num2);
+
+      break;
+    }
+
+    case("four") : {
+      boolean[] num1 = new boolean[4];
+      boolean[] num2 = new boolean[4];
+
+      num1[0] = false; num1[1] = true; num1[2] = true; num1[3] = true;    // 1110 = 14
+      num2[0] = true; num2[1] = false; num2[2] = false; num2[3] = false;  // 0001 = 1
+      add(num1, num2);  
+      
+      num1[0] = true; num1[1] = false; num1[2] = true; num1[3] = false; // 0101 = 5
+      num2[0] = false; num2[1] = true; num2[2] = true; num2[3] = true;  // 1110 = 14
+      add(num1, num2); 
+
+      num1[0] = true; num1[1] = true; num1[2] = true; num1[3] = true;   // 1111 = 15
+      num2[0] = true; num2[1] = true; num2[2] = true; num2[3] = true;   // 1111 = 15
+      add(num1, num2); 
+
+      num1[0] = true; num1[1] = false; num1[2] = true; num1[3] = false;  // 0101 = 5
+      num2[0] = true; num2[1] = false; num2[2] = true; num2[3] = false;  // 0101 = 5
+      add(num1, num2);  
+
+      break;
+    }
+
+    case("eight") : {
+      boolean[] num1 = new boolean[8];
+      boolean[] num2 = new boolean[8];
+
+      num1[0] = false; num1[1] = false; num1[2] = false; num1[3] = false;
+      num1[4] = false; num1[5] = false; num1[6] = false; num1[7] = false;  // 00000000 = 0
+      num2[0] = false; num2[1] = false; num2[2] = false; num2[3] = false;
+      num2[4] = false; num2[5] = false; num2[6] = false; num2[7] = false;  // 00000000 = 0
+      add(num1, num2);  
+
+      num1[0] = false; num1[1] = true; num1[2] = false; num1[3] = true;
+      num1[4] = false; num1[5] = true; num1[6] = false; num1[7] = true;  // 10101010 = 170
+      num2[0] = true; num2[1] = true; num2[2] = false; num2[3] = false;
+      num2[4] = false; num2[5] = true; num2[6] = true; num2[7] = true;  // 11100011 = 227
+      add(num1, num2);  
+
+    }
+
+  }
+
+}

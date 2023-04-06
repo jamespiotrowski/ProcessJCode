@@ -1,0 +1,26 @@
+import std.*;
+
+
+public void main(string[] args){
+    int TEST1 = 0;
+    const int TEST2 = 1;
+
+    int test = 3;
+
+    switch(test){
+        
+        case(TEST1) : { 
+            println(TEST1);
+            break;
+        }
+
+        case(TEST2) : { 
+            println(TEST2);
+            break;
+        }
+
+        default : {
+            break;
+        }
+    }
+}

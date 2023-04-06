@@ -1,0 +1,28 @@
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/Code/ProcessJ/ProcessJCode/Bugs/SwitchStatement$ /mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pjc SwitchStatement.pj
+-- Setting absolute path, file and package name for 'SwitchStatement.pj'.
+SwitchStatement.pj:12: Unknown name expression 'TEST1'.
+Error number: 3029
+SwitchStatement.pj:10: Switch label 'TEST1' of type '<Error>' not compatible with switch expression's type 'int'.
+Error number: 0
+SwitchStatement.pj:17: Unknown name expression 'TEST2'.
+Error number: 3029
+SwitchStatement.pj:10: Switch label 'TEST2' of type '<Error>' not compatible with switch expression's type 'int'.
+Error number: 0
+-- Rewriting channel arrays local decls
+** COMPILATION COMPLITED SUCCESSFULLY **
+ProcessJ compilation successful
+/home/jamespiotrowski/workingpj/SwitchStatement.java:55: error: constant expression required
+            case _ld$TEST11:
+                 ^
+/home/jamespiotrowski/workingpj/SwitchStatement.java:58: error: constant expression required
+            case _ld$TEST22:
+                 ^
+2 errors
+Java compilation successful
+Rewriting successful
+Instrumentation successful
+*.class : no such file or directory
+JAR file creation succesfull
+Output written to SwitchStatement.jar
+mv: cannot stat '/home/jamespiotrowski/workingpj/SwitchStatement.jar': No such file or directory
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/Code/ProcessJ/ProcessJCode/Bugs/SwitchStatement$  

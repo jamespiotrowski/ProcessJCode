@@ -1,0 +1,154 @@
+import std.*;
+
+const int MAX_SIZE = 25;
+const int END_MARKER = 255;
+const int KILL_SIGNAL = 256;
+
+void cell(chan<int>.read in, chan<int>.write out, int endMarker, int killSignal){
+    int storage;
+    int temp;
+    while(true){
+        storage = in.read();
+        while(storage != endMarker && storage != killSignal){
+            temp = in.read();
+            if(temp > storage){
+                out.write(storage);
+                storage = temp;
+            }
+            else{
+                out.write(temp);
+            }
+        }
+        out.write(storage);
+        if(storage == killSignal){
+            break;
+        }
+    }
+}
+
+void deploy(chan<int>.read in, chan<int>.write out, int n, int endMarker, int killSignal){
+    chan<int> connect;
+    if(n > 0){
+        par{
+            cell(in, connect.write, endMarker, killSignal);
+            deploy(connect.read, out, n - 1, endMarker, killSignal);
+        }
+    }
+    else{
+        cell(in, out, endMarker, killSignal);
+    }
+}
+
+void consumer(chan<int>.read in, int endMarker, int killSignal){
+    println("#######");
+    int temp;
+    while(true){
+        temp = in.read();
+        if(temp != endMarker && temp != killSignal){
+            println(temp);
+        }
+        else if(temp == killSignal){
+            break;
+        }
+        else{
+            println("#######");
+        }
+    }
+}
+
+// void start(chan<int>.write out, int arr[], int size){
+void start(chan<int>.write out
+    , int i0 , int i1 , int i2,  int i3 , int i4
+    , int i5 , int i6 , int i7,  int i8 , int i9
+    , int i10, int i11, int i12, int i13, int i14
+    , int i15, int i16, int i17, int i18, int i19
+){
+    out.write(i0);
+    out.write(i1);
+    out.write(i2);
+    out.write(i3);
+    out.write(i4);
+    out.write(i5);
+    out.write(i6);
+    out.write(i7);
+    out.write(i8);
+    out.write(i9);
+    out.write(i10);
+    out.write(i11);
+    out.write(i12);
+    out.write(i13);
+    out.write(i14);
+    out.write(i15);
+    out.write(i16);
+    out.write(i17);
+    out.write(i18);
+    out.write(i19);
+
+    /*
+    for(int i = 0; i < size; i++){
+        out.write(arr[i]);
+    }
+    */
+}
+
+public void main(string[] args){
+    chan<int> input; 
+    chan<int> output;
+    
+    println(args.size);
+    if(args.size > 0){
+        println(args[0]);
+    }
+    
+    int[] arr = new int[20];
+    /*
+    arr[0] = 3;
+    arr[1] = 72;
+    arr[2] = 4;
+    arr[3] = 42;
+    arr[4] = -10;
+    arr[5] = 44;
+    arr[6] = 42;
+    arr[7] = 255;
+    arr[8] = 255;
+    arr[9] = 3;
+    arr[10] = 4;
+    arr[11] = 3;
+    arr[12] = 2;
+    arr[13] = 255;
+    arr[14] = 1;
+    arr[15] = 2;
+    arr[16] = 3;
+    arr[17] = 4;
+    arr[18] = 255;
+    arr[19] = 256;
+    */
+
+    int i0 = 3;
+    int i1 = 72;
+    int i2 = 4;
+    int i3 = 42;
+    int i4 = -10;
+    int i5 = 44;
+    int i6 = 42;
+    int i7 = 255;
+    int i8 = 255;
+    int i9 = 3;
+    int i10 = 4;
+    int i11 = 3;
+    int i12 = 2;
+    int i13 = 255;
+    int i14 = 1;
+    int i15 = 2;
+    int i16 = 3;
+    int i17 = 4;
+    int i18 = 255;
+    int i19 = 256;
+
+    par{
+        //start(input.write, arr, 20);
+        start(input.write,i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15,i16,i17,i18,i19);
+        deploy(input.read, output.write, MAX_SIZE, END_MARKER, KILL_SIGNAL);
+        consumer(output.read, END_MARKER, KILL_SIGNAL);
+    }
+}

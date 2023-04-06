@@ -1,0 +1,74 @@
+import std.*;
+
+/* Small test */
+int add1(int a, int b){
+    return (a + b);
+}
+
+/* Small test 2 */
+int add2(chan<int>.read a, chan<int>.read b){
+    int an, bn;
+    par{
+        an = a.read();
+        bn = b.read();
+    }
+    return (an + bn);
+}
+
+/*********************************************
+ * EXAMPLE 6
+*********************************************/
+/*
+int while1(chan<int>.read c){
+    int total = 0;
+    int x = c.read();
+    while (x >= 0) {
+        total = total + x;
+        x = c.read();
+    }
+    return total;
+} 
+*/
+
+
+/*********************************************
+ * WRITER FOR EXAMPLES
+*********************************************/
+void writer(chan<int>.write out, int[] vals){
+    for(int i = 0; i < vals.size; i++){
+        out.write(vals[i]);
+    }
+}
+
+public void main(string[] args){
+
+    /////////////////////////////////
+    int x = add1(3,4);
+    println(x);
+
+    /////////////////////////////////
+    /*
+    chan<int> a, b;
+    int y;
+    par{
+        a.write.write(3);
+        b.write.write(37);
+        y = add2(a.read, b.read);
+    }
+    println(y);
+    */
+    /////////////////////////////////
+    /* 
+    chan<int> c;
+    int numVals = 3;
+    int[] v = new int[numVals];
+    v[0] = 1; v[1] = 2; v[2] = -947;
+   
+    // Example 6 on pg 103
+    int r;
+    par{
+        writer(c.write, v);
+        r = while1(c.read);
+    }
+    */
+}

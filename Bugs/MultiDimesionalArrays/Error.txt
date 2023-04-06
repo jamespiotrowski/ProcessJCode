@@ -1,0 +1,16 @@
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/code/ProcessJ/ProcessJCode/Bugs/MultiDimesionalArrays$ /mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pjc MultiDimensionalArrays.pj
+-- Setting absolute path, file and package name for 'MultiDimensionalArrays.pj'.
+-- Rewriting channel arrays local decls
+** COMPILATION COMPLITED SUCCESSFULLY **
+ProcessJ compilation successful
+/home/jamespiotrowski/workingpj/MultiDimensionalArrays.java:53: error: incompatible types: double[] cannot be converted to double[][][]
+            _ld$w3 = new double[_ld$numLayers1];
+                     ^
+1 error
+Java compilation successful
+Rewriting successful
+Instrumentation successful
+*.class : no such file or directory
+JAR file creation succesfull
+Output written to MultiDimensionalArrays.jar
+mv: cannot stat '/home/jamespiotrowski/workingpj/MultiDimensionalArrays.jar': No such file or directory

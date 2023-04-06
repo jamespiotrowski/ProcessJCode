@@ -1,0 +1,3 @@
+I think this code should work. 
+
+The case(...) doesn't work with the variables in it. I think it has to be a const expression.

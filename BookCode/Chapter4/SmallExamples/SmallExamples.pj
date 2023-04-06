@@ -1,0 +1,196 @@
+import std.*;
+
+/*********************************************
+ * EXAMPLE 1
+*********************************************/
+void switch1(chan<int>.read c, int i){
+    int x;
+    for(int j = 0; j < i; j++){
+        switch (c.read()) {
+            case 1: x = 1; break;
+            case 2: x = 2; break;
+            default: x = 0;    
+        }
+        println("switch1: " + x);
+    }
+}
+
+/*********************************************
+ * EXAMPLE 2
+*********************************************/
+void switch2(chan<int>.read c, int i){
+    int x;
+    for(int j = 0; j < i; j++){
+        switch (c.read()) {
+            case 1: x = 1; 
+            case 2: x = 2; break;
+            default: x = 0;    
+        }
+        println("switch2: " + x);
+    }
+}
+
+/*********************************************
+ * Sudo example: Code purely for example:
+ * --------------------------------------
+    int x;
+    for(int j = 0; j < i; j++){
+        temp = c.read();
+        if (temp == 1) 
+            goto label1
+        else if (temp == 2) 
+            goto label2
+        else 
+            goto label3
+
+        label1:
+            x = 1;
+        label2:
+            x = 2;
+            goto end;
+        label3:
+            x = 0
+        end:
+            println("example3: " + x);
+    }
+ * --------------------------------------
+ * EXAMPLE 3
+*********************************************/
+void switch3(int i){
+    int x = 0;
+    switch (i) {
+        case 0:
+        case 1: // we end here for both 0 and 1
+            x = 1;
+            break;
+        case 2: // we end here for 2
+            break;
+        case 3:
+        case 4: // we end here for 3 and 4
+            x = 2;
+        case 5: // we end here for 5
+            x = 3;
+            break;
+        default: // all other numbers end up here
+            x = 4;
+    }
+    println("switch3: " + x);
+}
+
+/*********************************************
+ * EXAMPLE 4
+*********************************************/
+void doWhile1(chan<int>.read c){
+    int x = 0; 
+    do {
+        if (c.read() > 0)
+            x++;
+        else
+            break;
+    } while (true);
+    println("doWhile1:" + x);
+}
+
+/*********************************************
+ * EXAMPLE 5
+*********************************************/
+void foo(int j){
+    println("foo: " + j);
+}
+
+void for1(chan<int>.read c){
+    for(int i = 0; i < 10; i++) {
+        println("for1 (for 1):" + i);
+    }
+
+    int x = 99, i = 0, y = 7;
+    for(x=0, foo(7), c.read(), y--; i < 10; i++) {
+        println("for1 (for 2):" + i);
+    }
+    println("for1 (x): " + x);
+    println("for1 (y): " + y);
+    println("for1 (i): " + i);
+
+}
+
+/*********************************************
+ * EXAMPLE 6
+*********************************************/
+/* active bug
+int while1(chan<int>.read c){
+    int total = 0;
+    int x = c.read();
+    while (x >= 0) {
+        total = total + x;
+        x = c.read();
+    }
+    return total;
+}
+*/
+
+
+/*********************************************
+ * WRITER FOR EXAMPLES
+*********************************************/
+void writer(chan<int>.write out, int[] vals){
+    for(int i = 0; i < vals.size; i++){
+        out.write(vals[i]);
+    }
+}
+
+public void main(string[] args){
+    // Print example from previous pages
+    print("no newline here");
+    println("");
+    println("That was a newline!");
+    println("##########################");
+
+    // Example 1 on page 98
+    chan<int> c;
+    int numVals = 3;
+    int[] v = new int[numVals];
+    v[0] = 1; v[1] = 2; v[2] = -947;
+    par{
+        writer(c.write, v);
+        switch1(c.read, numVals);
+    }
+    println("##########################");
+
+    // Example 2 on page 98
+    par{
+        writer(c.write, v);
+        switch2(c.read, numVals);
+    }
+    println("##########################");
+
+    // Example 3 on 99
+    switch3(0);
+    switch3(1);
+    switch3(2);
+    switch3(3);
+    switch3(4);
+    switch3(5);
+    switch3(-947);
+    println("##########################");
+
+    // Example 4 on pg 101
+    par{
+        writer(c.write, v);
+        doWhile1(c.read);
+    }
+    println("##########################");
+
+    // Example 5 on pg 102
+    par{
+        c.write.write(7);
+        for1(c.read);
+    }
+    println("##########################");
+
+    // Example 6 on pg 103
+    //int r;
+    //par{
+    //    writer(c.write, v);
+    //    r = while1(c.read);
+    //}
+}

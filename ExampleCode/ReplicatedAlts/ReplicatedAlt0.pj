@@ -1,0 +1,121 @@
+import std.*;
+
+// Used for sudo random number generation
+public long MAX = 1000;
+public long MIN = 0;
+public long OFFSET = 123456789;
+
+/***************************************************/
+/* writer to plex
+
+    This process will write a bunch of "random"
+    numbers to the left part of the plex. 
+****************************************************/
+void writerToPlex(chan<int>.write[] writers){
+    timer t;
+    long time;
+    for(int i = 0; i < writers.size; i++){
+        time = t.read();
+        //println(i);
+        writers[i].write((((time + OFFSET) % (MAX - MIN)) + MIN));
+    }
+}
+
+/***************************************************/
+/* plex
+
+    reads in from all numbers on the left. 
+    First reads the sender, then the number
+    sent by the sender, and routes it to the 
+    de plex
+****************************************************/
+void plex(chan<int>.read[] readers, chan<int>.write out){
+    int temp;
+    //while(true){
+    for(int reader = 0; reader < readers.size; reader++){
+        alt(int i = 0; i < readers.size; i++){
+            temp = readers[i].read() : {
+                out.write(i);
+                out.write(temp);
+            }
+        }
+    }
+}
+
+/***************************************************/
+/* de-plex
+
+    reads in a channel to write a number to, then
+    reads the number to write. Then it writes the 
+    number to the designated writer
+****************************************************/
+void dePlex(chan<int>.write[] writers, chan<int>.read in){
+    int routeChannel, num;
+    //while(true){
+    for(int writer = 0; writer < writers.size; writer++){
+        routeChannel = in.read();
+        num = in.read();
+        writers[routeChannel].write(num);
+    }
+}
+
+/***************************************************/
+/* writer to plex
+
+    This process will write a bunch of "random"
+    numbers to the left part of the plex. 
+****************************************************/
+void receiverFromDePlex(chan<int>.read[] readers){
+    int temp;
+    for(int reader = 0; reader < readers.size; reader++){
+        temp = readers[reader].read();
+        println("[From]: " + reader + " [Content]: " + temp);
+        /*
+        alt(int i = 0; i < readers.size; i++){
+            temp = readers[i].read() : {
+                println("[From]: " + i + " [Content]: " + temp);
+            }
+        }
+        */
+    }
+}
+
+/***************************************************/
+/*
+****************************************************/
+public void main(string[] args){
+    int numChans = 1000;
+
+    // For the left side of the system 
+    chan<int>[] leftChans = new chan<int>[numChans];
+    chan<int>.write[] leftWritingEnds = new chan<int>.write[numChans];
+    chan<int>.read[] leftReadingEnds = new chan<int>.read[numChans];
+
+    // For the right side of the system
+    chan<int>[] rightChans = new chan<int>[numChans];
+    chan<int>.write[] rightWritingEnds = new chan<int>.write[numChans];
+    chan<int>.read[] rightReadingEnds = new chan<int>.read[numChans];
+
+    // The One Channel in the middle
+    chan<int> middle;
+
+    // Set them up
+    for(int i = 0; i < numChans; i++){
+        leftWritingEnds[i] = leftChans[i].write;
+        leftReadingEnds[i] = leftChans[i].read;
+        rightWritingEnds[i] = rightChans[i].write;
+        rightReadingEnds[i] = rightChans[i].read;
+    }
+
+    println("Starting Plex Test");
+
+    // Set them OFF!
+    par{
+        writerToPlex(leftWritingEnds);
+        plex(leftReadingEnds, middle.write);
+        dePlex(rightWritingEnds, middle.read);
+        receiverFromDePlex(rightReadingEnds);
+    }
+
+    println("Finished Plex Test");
+}

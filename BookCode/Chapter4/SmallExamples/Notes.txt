@@ -1,0 +1,16 @@
+Page 101:
+    - says x.read() but x is an int
+
+Page 103:
+    - I think dr. pedersen made changes already but there are still issues:
+
+    - Book version:
+        - not sure ((x = c.read()) > 0) is a valid PJ expression
+        - total = total + c (should say x)
+    
+    - ?new? version (in code Dr. Pedersen emailed me)
+        - (x = > 0) // should be (x >= 0)
+
+    - This code wont compile. Submitting as bug
+        From Ben:
+        "At the moment, you can't return values from a function/method that becomes a PJProcess. Dr. Pedersen and I talked about this in the past... and it stayed in the past he he :)"

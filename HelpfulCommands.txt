@@ -1,0 +1,10 @@
+-- Compiler
+/mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pjc
+/mnt/c/Users/james/Code/ProcessJ/Install/Benv1Branch/processj/pjc
+
+-- Execution
+/mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pj
+/mnt/c/Users/james/Code/ProcessJ/Install/Benv1Branch/processj/pj
+
+
+git clone -b <branch> <remote_repo>

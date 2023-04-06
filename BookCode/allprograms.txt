@@ -1,0 +1,2531 @@
+  package HelloWorld;
+  import std.io;
+
+  const string greeting = "Hello World!";
+  
+  public void main(string args[]) {
+    println(greeting);
+  }
+  import A.B.foo;
+  import A.B.*;
+  package A.B;
+  import A.B.File;
+  import A.B.*;
+  package MyFirstProject;
+  package A;
+  
+  public const x = 10;    // visible anywhere
+  protected const y = 20; // visible in package A only
+  private const z = 30;   // visible in this file only
+  const w = 40;           // no modifier = private  
+  public void f(const int x) {
+    const int y = 10;  // y can not be assigned to
+    y = x;             // Illegal
+    x = y;             // Also illegal
+  }
+  int x;
+  int y = 10;
+  public void main(string args[]) {
+    ...
+  }
+  int[] numbers = new int[100];
+  int numbers[] = new int[100];
+  int[][] a = new int[100][100]; // legal
+  int[][] b = new int[100][];    // legal
+  int[][] c = new int[][];       // illegal
+  int[][] a = new int[100][1000]; // a 100x1000 2D array
+  int x = a.length;               // x == 100
+  int y = a[0].length;            // y == 1000
+  a = c[2] + b;
+  x = in.read();
+  out.write(a + 2 * b);
+  timer t;
+  long tim;
+  tim = t.read();    // what time is it?
+  
+  t.timeout(tim+20); // pause 20 milliseconds
+  
+  skip;              // do nothing - same as just ;
+  
+  stop;              // suspend non-recoverably
+  timer t;          // declare a timer
+  long currentTime; // variable to hold the current time
+  
+  currentTime = t.read(); // read the current time
+  long timeoutTime;       // the absolute timeout time
+  timeoutTime = currentTime + 2000; // in 2 seconds
+  
+  t.timeout(timeoutTime); // pause execution for 2 seconds
+  chan<int> c;    // c carries integer values
+  chan<float> d;  // d carries float values
+  chan<int> c;  
+  
+  int x;
+  par {
+    c.write.write(42);
+    x = c.read.read();
+  }
+  chan<int> c;  
+  
+  int x;
+  par {
+    c.write(42);
+    x = c.read();
+  }
+  const double PI = 3.1415;
+  void foo(const byte s[], const boolean mode,
+           chan<int>.read in, chan<int>.write out,
+           chan<byte>.read pause) {
+    ...
+  }
+  int a, b;  // declares two integer variables
+  int c[];   // declares an integer array (no size)
+  
+  timer t;   // declares a single timer
+  barrier b; // declares a single barrier
+  
+  chan<int> ch; // declares a channel of ints
+  chan<int> chs[]; // declares an array of channels
+  
+  chan<int>.read r; // declares the reading end of a
+                    // channel carrying ints
+  
+  const double pi = 3.1415; // declares a local constant
+  int v;
+  v = r.read();       // is the same as
+  v = ch.read.read(); // which is also the same as
+  v = ch.read();      // allowed for simplicity
+  {
+    sum = in.read(); // read a value from the 'in' channel.
+    x = in.read();   // read another value from 'in'.
+    sum = sum + x;   // add the two values, store in 'sum'.
+    out.write(sum);  // write 'sum' to the 'out' channel.
+  }
+  ...
+  par {
+    x = 7;
+    y = 9;
+  }
+  public void foo(chan<int>.read in, chan<int>.write out) {
+    int x;
+    int sum;
+    ... {
+      x = in.read();
+      sum = in.read();
+      sum = sum + x;
+      out.write(sum);
+    }
+    ...
+  }
+  public void bar(chan<int>.read in!0!, chan<int>.read in!1!,
+                  chan<int>.write out) {
+    int x!0!, x!1!;
+    int a, b, c;
+    ...
+    ... {
+      x!1! = in!1!.read();
+      x!0! = in!0!.read();
+      out.write(a+b);
+      c = a + 2 * b;
+    }
+    ...
+  }
+  ...
+  // illegal assignment and use of the same variable
+  par {
+    x = in.read();
+    a = x + b;
+  }
+  // illegal parallel input
+  par {
+    x = in.read();
+    y = in.read();
+  }
+  // illegal parallel output
+  par {
+    out.write(x);
+    out.write(y);
+  }
+  ...
+  ...
+  // without an else
+  if (x == 3)
+    y = 4;
+    
+  // with an else
+  if (x == 3)
+    y = 4;
+  else
+    y = 6;
+  ...
+  ...
+  // without an else
+  if (x == 3) {
+    y = 4;
+    z = 5;
+  }
+  
+  // with an else
+  if (x == 3) {
+    y = 4;
+    z = 5;
+  } else {
+    y = 6;
+    z = 8;
+  }
+  ...
+  if (e)
+    S
+  if (e)
+    S!1!
+  else
+    S!2!
+  ...
+  while (n != m) {
+    if (n > m)
+      n = n - m;
+    if (m > n)
+      m = m - n;
+  }
+  ...
+  while (e)
+    S
+  public void id(chan<int>.read in, chan<int>.write out) {
+    while (true) {
+      int x;
+      x = in.read();
+      out.write(x);
+    }
+  }
+  
+  public void succ(chan<int>.read in, chan<int>.write out) {
+    while (true) {
+      int x;
+      x = in.read();
+      out.write(x + 1);
+    }
+  }
+  
+  public void blackHole(chan<int>.read in) {
+    while (true) {
+      int x;
+      x = in.read();
+    }
+  }
+  
+  public void plus(chan<int>.read in!1!, chan<int>.read in!2!,
+                   chan<int>.write out) {
+    while (true) {
+      int x!1!, x!2!;
+      par {
+        x!1! = in!1!.read();
+        x!2! = in!2!.read();
+      }
+      out.write(x!1! + x!2!);
+    }
+  }
+  
+  public void delta(chan<int>.read in, chan<int>.write out!1!,
+                    chan<int>.write out!2!) {
+    while (true) {
+      int x;
+      x = in.read();
+      par {
+        out!1!.write(x);
+        out!2!.write(x);
+      }
+    }
+  }
+  
+  public void prefix(const int n, chan<int>.read in,
+                    chan<int>.write out) {
+    out.write(n);
+    id(in, out);
+  }
+  
+  public void tail(chan<int>.read in, chan<int>.write out) {
+    int x;
+    x = in.read();
+    id(in, out);
+  }
+  void FIFO!6!(chan<int>.read in, chan<int>.write out) {
+    chan<int> c!1!,c!2!,c!3!,c!4!,c!5!;
+    par {
+      id(in, c!1!.write);
+      id(c!1!.read, c!2!.write);
+      id(c!2!.read, c!3!.write);
+      id(c!3!.read, c!4!.write);
+      id(c!4!.read, c!5!.write);
+      id(c!5!.read, out);
+    }
+  }
+  public void numbers(chan<int>.write out) {
+    chan<int> a, b, c;
+    par {
+      delta(a.read, out, b.write);
+      succ(b.read, c.write);
+      prefix (0, c.read, a.write);
+    }
+  }
+  public void integrate(chan<int>.read in, 
+                        chan<int>.write out) {
+    chan<int> a, b, c;
+    par {
+      delta(a.read, out, b.write);
+      prefix(0, b.read, c.write);
+      plus(in, c.read, a.write);
+    }
+  }
+  public void pairs(chan<int>.read in, 
+                    chan<int>.write out) {
+    chan<int> a, b, c;
+    par {
+      delta(in, a.write, c.write);
+      tail(a.read, b.write);
+      plus(b.read, c.read, out);  
+    }
+  }
+  public void numbers(chan<int>.write out) {
+    int n = 0;
+    while (true) {
+      out.write(n);
+      n = n + 1;
+    }
+  }
+  
+  public void integrate(chan<int>.read in, 
+                        chan<int>.write out) {
+    int total = 0;
+    while (true) {
+      int x;
+      x = in.read();
+      total = total + x;
+      out.write(total);
+    }
+  }
+  public void fibonacci(chan<int>.write out) {
+    chan<int> a, b, c, d;
+    par {
+      delta(a.read, b.write, out);
+      pairs(b.read, c.write);
+      prefix(0, d.read, a.write);
+      prefix(1, c.read, d.write);
+    }
+  }
+  public void squares(chan<int>write out) {
+    chan<int> a, b;
+    par {
+      numbers(a.write);
+      integrate(a.read, b.write);
+      pairs(b.read, out);
+    }
+  }
+  void notGate(chan<boolean>.read in, 
+               chan<boolean>.write out) {
+    boolean x; 
+    x = in.read(); 
+    out.write(!x);
+  } 
+  void orGate(chan<boolean>.read in!1!, 
+              chan<boolean>.read in!2!, 
+              chan<boolean>.write out) {
+    boolean x,y;
+    par {
+      x = in!1!.read();
+      y = in!2!.read(); 
+    }
+    out.write(x || y);
+  }
+
+  void andGate(chan<boolean>.read in!1!, 
+               chan<boolean>.read in!2!, 
+               chan<boolean>.write out) {
+    boolean x,y;
+    par {
+      x = in!1!.read();
+      y = in!2!.read(); 
+    }
+    out.write(x && y);
+  }
+  void nandGate(chan<boolean>.read in!1!, 
+                chan<boolean>.read in!2!,
+                chan<boolean>.write out) {
+    chan<boolean> a;
+    par{
+      andGate(in!1!, in!2!, a.write);
+      notGate(a.read, out);
+    }
+  }
+  void deltaGate(chan<boolean>.read in, 
+                 chan<boolean>.write out!1!, 
+                 chan<boolean>.write out!2!) {
+    boolean x;
+    x = in.read(); 
+    par{
+      out!1!.write(x);
+      out!2!.write(x);
+    }
+  }
+  void xorGate(chan<boolean>.read in!1!, 
+               chan<boolean>.read in!2!, 
+               chan<boolean>.write out) {
+    chan<boolean> a, b, c, d , e, f, g, h, i;
+    par{
+      deltaGate(in!1!, a.write, b.write);
+      deltaGate(in!2!, c.write, d.write);
+      nandGate(b.read, c.read, e.write);
+      deltaGate(e.read, f.write, g.write);
+      nandGate(a.read, f.read, h.write);
+      nandGate(g.read, d.read, i.write);
+      nandGate(h.read, i.read, out);
+    } 
+  }
+  void oneBitAdder(chan<boolean>.read in!1!, 
+                   chan<boolean>.read in!2!,
+                   chan<boolean>.read carry-in, 
+                   chan<boolean>.write result,
+                   chan<boolean>.write carry-out) {
+    chan<boolean> a, b, c, d, e, f, g, h, i, j, k;
+    par{
+      deltaGate(in!1!, a.read, b.write);
+      deltaGate(in!2!, c.read, d.write);
+      xorGate(a.read, c.read, e.write);
+      deltaGate(e.read, f.write, g.write);
+      deltaGate(carry-in, h.write, i.write);
+      xorGate(f.read, h.read, result);
+      andGate(g.read, i.read, j.write);
+      andGate(b.read, d.read, k.write);
+      orGate(j.read, k.read, carry-out);
+    } 
+  }
+  void fourBitAdder(chan<boolean>.read inA!0!, 
+                    chan<boolean>.read inA!1!, 
+                    chan<boolean>.read inA!2!, 
+                    chan<boolean>.read inA!3!,
+                    chan<boolean>.read inB!0!, 
+                    chan<boolean>.read inB!1!,
+                    chan<boolean>.read inB!2!, 
+                    chan<boolean>.read inB!3!,
+                    chan<boolean>.read carry-in, 
+                    chan<boolean>.write result!0!,
+                    chan<boolean>.write result!1!, 
+                    chan<boolean>.write result!2!,
+                    chan<boolean>.write result!3!, 
+                    chan<boolean>.write carry-out) { 
+    chan<boolean> a, b, c; 
+    par{
+      oneBitAdder(inA!0!, inB!0!, carry-in, result!0!, a.write);
+      oneBitAdder(inA!1!, inB!1!, a.read, result!1!, b.write);
+      oneBitAdder(inA!2!, inB!2!, b.read, result!2!, c.write);
+      oneBitAdder(inA!3!, inB!3!, c.read, result!3!, carry-out);
+    }
+  }
+  ...
+  chan<boolean> carry-in;
+  par {
+    carry-in.write(0);
+    fourBitAdder(...., carry-in.read, ...);
+    ...
+  }
+  void eightBitAdder(chan<boolean>.read inA!0!,
+                     ...
+                     chan<boolean>.read inA!7!,
+                     chan<boolean>.read inB!0!, 
+                     ...
+                     chan<boolean>.read inB!7!,
+                     chan<boolean>.read carry-in, 
+                     chan<boolean>.write result!0!,
+                     ...
+                     chan<boolean>.write result!7!, 
+                     chan<boolean>.write carry-out) {
+    chan<boolean> a;
+    par{
+      fourBitAdder(inA!0!, inA!1!, inA!2!, inA!3!,
+                   inB!0!, inB!1!, inB!2!, inB!3!,
+                   carry-in,
+                   result!0!, result!1!, result!2!, result!3!,
+                   a.write);
+      fourBitAdder(inA!4!, inA!5!, inA!6!, inA!7!,
+                   inB!4!, inB!5!, inB!6!, inB!7!,
+                   a.read,
+                   result!4!, result!5!, result!6!, result!7!,
+                   carry-out);
+    }
+  }
+  import std.io;
+  ...
+  void main(string args[]) {
+    print("no newline here");
+    println("");
+    println("That was a newline!");
+  }
+  void P!0!(chan<int>.read a!0!,   chan<int>.read b!0!,
+          chan<int>.write c!0!,  chan<int>.read ask,
+          chan<int>.write ans, barrier bar) {
+    while (true) {
+      int x,y,z;
+      x = ask.read();            // take question 
+      y = a!0!.read(); 
+      ans.write(0);              // return answer
+      z = b!0!.read();
+      sync(bar);                 // wait for the others
+      c!0!.write(0);
+    }
+  }
+  void P!1!(chan<int>.read a!1!,  chan<int>.read b!1!,
+          chan<int>.write c!1!, chan<int>write ask,
+          chan<int>.read ans, chan<int>.write ping,
+          barrier bar) {
+    while (true) {
+      int x,y,z;
+      ask.write(0);              // ask a question
+      x = ans.read();            // wait for answer
+      y = a!1!.read();
+      z = b!1!.read();
+      sync(bar);                   // wait for the others
+      c!1!.write(0);
+      ping.write(0);             // update neighbor
+    }
+  } 
+  void P!2!(chan<int>.write d!0!,  chan<int>.write d!1!,
+          chan<int>.read ping, barrier bar) {
+    while (true) {
+      int x;
+      sync(bar);                 // wait for the others
+      d!0!.write(0);
+      x = ping.read();           // receive update
+      sync(bar);                 // wait for the others
+      d!1!.write(0);
+      x = ping.read();           // receive another update
+    }
+  }
+  void Device(chan<int>.read a!0!,  chan<int>.read b!0!,
+              chan<int>.write c!0!, chan<int>.read a!1!,
+              chan<int>.read b!1!,  chan<int>.write c!1!,
+              chan<int>.write d!0!, chan<int>.write d!1!) {
+    chan<int> ask, ans, ping;
+    barrier bar;
+    par enroll bar {
+      P!0!(a!0!, b!0!, c!0!, ask.read, ans.write, bar);
+      P!1!(a!1!, b!1!, c!1!, ask.write, ans.read, ping.write, bar);
+      P!2!(d!0!, d!1!, ping.read, bar);
+    }
+  }               
+  protocol Report {
+    me: {}          // monitor completed its task
+    she: {}         // monitor was stopped in its task
+  }
+  protocol Kill {
+    kill: {}
+  }
+  void monitor(const int mode,
+               chan<int>.read command,
+               chan<int>.read sensor,
+               chan<Report>.write report,
+               chan<Kill>.write killYou,
+               chan<Kill>.read killMe) {
+    int target;
+    int x;
+    while (true) {
+      pri alt {
+        target = command.read() :
+          service(mode, target, sensor, report,
+                  killYou, killMe);
+        x = sensor.read():
+          skip;
+      }
+    }
+  }        
+  void service(const int mode,
+               chan<int>.read command,
+               chan<int>.read sensor,
+               chan<Report>.write report,
+               chan<Kill>.write killYou,
+               chan<Kill>.read killMe) {
+    ... local state declarations and inits.
+    bool running = true;
+    Kill kill;
+    int x;
+    while (running) {
+      pri alt {
+        kill = killMe.read(): {
+          // I was killed by the other process
+          report.write(new Report{she: {}});
+          running = false;
+        }
+        x = sensor.read(): {
+          ... update local state with x (depends on mode)
+          bool terminate = ... termination reached ?          
+          if (terminate) {
+            // I will kill the other process
+            killYou.write(new Kill{kill:{}});
+            report.write(new Report{me: {}});
+            running = false;
+          } 
+        }
+      }
+    }
+  }     
+  const int move = 0;    // mode values for
+  const int search = 1;  // monitor operations
+
+  void MADsystem(chan<int>.read moveCommand,
+                 chan<int>.read searchCommand,
+                 chan<int>.read motorSensor,
+                 chan<int>.read cameraSensor,
+                 chan<Report>.write moveReport,
+                 chan<Report>.write searchReport) {
+    chan<Kill> a,b;
+    par {
+      monitor(move, moveCommand, motorSensor,
+              moveReport, b.write, a.read);
+      monitor(search, searchCommand, cameraSensor,
+              searchReport, a.read, b.write);
+    }
+  }                
+  protocol Report {
+    me: {}   // I finished
+    she: {}  // she fhinished
+    both: {} // both finished
+  }
+
+  protocol Kill {
+    kill: {}
+    ack: {}  // acknowledge kill
+  }
+  pri alt {
+    kill = killMe.read(): {
+      killYou.write(new Kill{ack: {}});
+      report.write(new Report{she: {}});
+      running = false;
+    }
+    x = sensor.read(): {
+      ... update local state with x (depends on mode)
+      bool terminate = ... termination reached ?
+      if (terminate) {
+        Kill k;
+        par {
+          killYou.write(new Kill{you: {}});
+          seq { 
+            k = killMe.read();
+            switch(k) {
+            case ack: 
+              report.write(new Kill{me: {}}); 
+            case kill: 
+              report.write(new Kill{she: {}});
+            }
+          }
+        }
+        running = false;
+      }
+    }
+  }
+  chan<int> c;
+  int x;
+  ...
+  switch (c.read()) {
+    case 1: x = 1; break;
+    case 2: x = 2; break;
+    default: x = 0;    
+  }
+  ...
+  chan<int> c;
+  int x;
+  ...
+  switch (c.read()) {
+    case 1: x = 1; 
+    case 2: x = 2; break;
+    default: x = 0;    
+  }
+  ...
+  ...
+  temp = c.read();
+  if (temp == 1) 
+    goto !label1!
+  else if (temp == 2) 
+    goto !label2!
+  else 
+    goto !label3!
+
+  !label1!:
+    x = 1;
+  !label2!:
+    x = 2;
+    goto end;
+  !label3!:
+    x = 0
+  end:
+  ...
+  ...
+  int x = 0;
+  switch (i) {
+  case 0:
+  case 1: // we end here for both 0 and 1
+    x = 1;
+    break;
+  case 2: // we end here for 2
+    break;
+  case 3:
+  case 4: // we end here for 3 and 4
+    x = 2;
+  case 5: // we end here for 5
+    x = 3;
+    break;
+  default: // all other numbers end up here
+    x = 4;
+  }
+  ...
+  int x = 0;
+  do {
+    if (x.read() > 0) 
+      x++;
+    else
+      break;
+  } while (true);
+  for(int i=0; i<10; i++) {
+    println(i);
+  }
+  ...
+  for(x=0, foo(7), c.read(), y--; i<10; i++) {
+    println(i);
+  }
+  for (e1; e2; e3) 
+    S
+  int total = 0;
+  int x = c.read();
+  while (x = > 0) {
+    total = total + x;
+    x = c.read();
+  }
+  return total;
+  v = c.read()
+  while (true) {
+    alt {
+      v = c!1!.read(): println("Value read on c1: " + v);
+      v = c!2!.read(): println("Value read on c2: " + v);
+    }
+  }  
+  public void mux(chan<int>.read in!0!, 
+                  chan<int>.read in!1!,
+                  chan<int>.read in!2!, 
+                  chan<int>.write out) {
+    while (true) {
+      int x;
+      alt {
+        x = in!1!.read(): out.write(x);
+        x = in!2!.read(): out.write(x);
+        x = in!3!.read(): out.write(x);
+      }
+    }
+  }
+  tim.timeout(when)
+  timer tim;
+  long when = tim.read() + 200;
+  timer tim;
+  tim.timeout(tim.read());
+  public void watchdog(const int period, 
+                       chan<int>.read in,
+                       chan<int>.write out, 
+                       chan<bool>.write panic) {
+    while (true) {
+      timer t;
+      int v;
+      alt {
+        v = in.read()             : out.write(v);
+        t.timeout(t.read()+period): panic.write(true);
+      }
+    }
+  }                          
+  alt {
+    skip: x = 42;
+    skip: x = 43;
+  }
+  pri alt {
+    x = in.read() : // data is ready - channel can be read.
+    skip          : // no data is ready on the channel.
+  }
+  public void replace(chan<int>.read in, 
+                      chan<int>.read inject,
+                      chan<int>.write out) {
+    while (true) {
+      int x;
+      pri alt {
+        x = inject.read() : {
+          par {
+            int any = in.read(); // replace the next read 
+            out.write(x);        // value on in by x.
+          }
+        }
+        x = in.read() :          // normal operation - 
+          out.write(x);          // simply copy through
+      }
+    }
+  }
+  void count(const int period,
+             chan<int>.read in,
+             chan<int>.write out) {
+    timer tim;
+    long when = tim.read() + period;
+    int seen = 0;
+    int any;
+    while (true) {
+      pri alt {
+        t.timeout(when): {
+          out.write(seen);
+          seen = 0;
+          when = tim.read() + period;
+        }
+        any = in.read(): seen = seen + 1;
+      }
+    }        
+  }
+  public void numbers_reset(chan<int>.write out, 
+                            chan<int>.read reset) {
+    chan<int> a, b, c, d;
+    par {
+      prefix(0, d.read, a.write);
+      replace(a.read, b.write, reset.read);
+      delta(b.read, out, c.write);
+      succ (c.read, d.write);
+    }
+  }
+  public void numbers_reset(chan<int>.write out,
+                            chan<int>.read reset) {
+    int n = 0;
+    while (true) {
+      pri alt {
+        n = reset.read() : skip;
+        skip             : skip;
+      }
+      out.write(n);
+      n = n + 1;
+    }
+  }
+  public void integrate_kill(chan<int>.read in, 
+                             chan<int>.write out,
+                             chan<bool>.read kill) {
+    int total = 0;
+    bool any;
+    while (true) {
+      pri alt {
+        any = kill.read() : break;
+        x = in.read()     : {
+          total = total + x;
+          out.write(total);
+        }
+      }
+    }
+  }
+  ...
+  int total = 0;
+  bool running = true;
+  while (running) {
+    pri alt {
+      any = kill.read() : running = false;
+      x = in.read()     : {
+        total = total + x;
+        out.write(total);
+      }
+    }
+  }
+  ...
+  public void integrate(chan<int>.read in,
+                        chan<int>.write out) {
+    chan<int> a, b, c;
+    par {
+      plus(in, c.read, a.write);
+      delta(a.read, out, b.write);
+      prefix(0, b.read, c.write);
+    }
+  }
+  public void integrate(chan<int>.read in,
+                        chan<int>.write out,
+                        chan<int>.read kill) {
+    chan<int> a, b, c, d;
+    par {
+      killer(in, kill.read, d.write);
+      plus(d.read, c.read, a.write);
+      delta(a.read, out, b.write);
+      prefix(0, b.read, c.write);
+    }
+  }
+  public void memcell(chan<int>.read in,
+                      chan<int>.write out,
+                      chan<bool>.read request) {
+    int x;
+    while (true) {
+      bool any;
+      alt {
+        x = in.read()        : skip;
+        any = request.read() : out.write(x);
+      }
+    }
+  }
+  public void prompt(chan<bool>.write request, 
+                     chan<int>.read in,
+                     chan<int>.write out) {
+    int x;
+    while (true) {
+      request.write(true);
+      x = in.read();
+      out.write(x);
+    }
+  }  
+  public void mem_cell!2!(bool allowReset, chan<int>.read in,
+                        chan<int>.read reset, 
+                        chan<int>.write out) {
+    int x;
+    bool b;
+    while (true) {
+      alt {
+        (allowReset) && x = reset.read(): 
+          skip;
+        x = in.read(): 
+          skip;
+        b = request.read():
+          out.write(x);
+      }
+    }
+  }    
+  public void buffer(const int max, 
+                     chan<int>.read in, 
+                     chan<int>.write out, 
+                     chan<bool>.read request) {
+    int hold[] = new int[max];
+    int lo = 0;
+    int hi = 0;
+    int size = 0; // size = hi-lo (modulo wrap-around)
+    while (true) {
+      bool any;
+      alt {
+        (size < max) && hold[hi] = in.read(): {
+          hi = (hi + 1) % max;
+          size = size + 1;
+        }
+        (size > 0) && any = request.read(): {
+          out.write(hold[lo]);
+          lo = (lo + 1) % max;
+          size = size - 1;
+        }
+      }
+    }
+  }   
+  (size > 0) && out.write(hold[lo]): {
+    lo = (lo + 1) % max;
+    size = size - 1;
+  }
+  public void new_buffer(const int max, chan<int>.read in,
+                         chan<int>.write out) {
+    chan<bool> request;
+    chan<int> answer;
+    par {
+      buffer(max, in, request.read, answer.write);
+      prompt(answer.read, request.write, out);
+    }
+  }
+  public void new_buffer!2!(int max, 
+                            chan<int>.read in,
+                            chan<int>.write out) {
+    chan<int> c[] = new chan<int>[max];
+    par {
+      id(in, c[0].write);
+      par for (int i=0; i<max; i++)
+        id(c[i].read, c[i+1].write);
+      id(c[max-1].read, out);
+    }
+  }
+  public record Person {
+    string name;
+    int number;
+    string street;
+  }
+  A myA;
+  ...
+  myA = new A{b=true, y=0.0, z=3.14, w="Hello", x=10};
+  ...
+  int q;
+  ...
+  q = myA.x + 20;  // q will be 30 after the assignment
+  public record Node {
+    int data;
+    Node left, right;
+  }
+  Node root = new Node{data=100, left=null, right=null};
+%  A a = new A{ ... };
+%  B b = a;  
+  record B {
+    int x;
+  }
+  
+  record C {
+    string w;
+  }
+  
+  record D {
+    double y;
+    double z;
+  }
+
+  record A extends B, C, D {
+    boolean b;
+  }
+  record A {
+    ...
+  }
+  
+  record B extends A {
+    ...
+  }
+  
+  record C extends B {
+    ...
+  }
+  ...
+  A a = new A{...};
+  B b = new B{...};
+  C c = new C{...};
+  
+  a = b; // legal
+  a = c; // legal
+  b = a; // illegal
+  b = c; // legal
+  c = a; // illegal
+  c = b; // illegal
+  record Vehicle {
+    int weight;
+    int height;
+    int depth;
+    int width;
+  }
+  
+  record Car extends Vehicle {
+    int wheels;
+    int seats;
+  }
+  
+  record Plane extends Vehicle {
+    int engines;
+  }
+  ...
+  Car c = new Car{weight=100; height=2; 
+                  width=2; depth=3; seats=4; wheels=4};
+  c.weight      // legal
+  c.height      // legal
+  c.width       // legal
+  c.depth      // legal
+  c.wheels      // legal
+  Vehicle v = c;
+  v.weight      // legal
+  v.height      // legal
+  v.width       // legal
+  v.depth      // illegal
+  v.wheels      // illegal
+  ...
+  B b = new B{...};
+  A a = b;            // legal as B extends A
+  b = (B)a;           // legal as a _is_ a B
+  C c = (C)a;         // illegal as a _is_not_ a C
+  
+  c = new C{...};
+  a = c;              // legal as C extends B extends A
+  c = (C)a;           // legal as a _is_ a C
+  b = (B)a;           // legal as a _is_ a B!$^*$! 
+  
+  ((Car)v).seats = 3; // legal as v _is_ rally a Car 
+  A a = new A{...};
+  B b = new B{...};
+  C c = new C{...};
+  
+  ... (a is A)       // true
+  ... (a is B)       // false
+  ... (a is C)       // false
+
+  ... (b is A)       // true
+  ... (b is B)       // true
+  ... (b is C)       // false
+
+  ... (c is A)       // true
+  ... (c is B)       // true
+  ... (c is C)       // true
+  
+  ... (v is Car)     // true
+  ... (v is Plane)   // false
+  ... (v is Vehicle) // true
+  public protocol Alternatives {
+    dog: { int i; }
+    cat: { string s; double d; }
+    pig: { Packet p; }
+    canary: { Message m; }
+    poison: { }
+  }
+Alternative piCat = new Alternatives{cat: s="Meow", d=3.14}
+  ...
+  chan<Alternatives> c;
+  par {
+    A(c.write);
+    B(c.read);
+  }
+  ...
+  public void A(chan<Alternatives>.write out) {
+    out.write(new Alternatives{dog: i=10});
+    out.write(new Alternatives{cat: s="Meow", d=3.14});
+    out.write(new Alternatives{poison: });
+  }
+  public void B(chan<Alternatives>.read in) {
+    Alternatives a = in.read();
+    // handle a
+  }
+  // handle `a'
+  switch (a) {    // we switch on the actual variable/value
+    case dog:     // here we may access a.i
+    case cat:     // here we may access a.s and a.d
+    case pig:     // here we may access a.p
+    case canary:  // here we may access a.m
+    case poison:  // there are no fields to access
+  } 
+  ...
+  void foo(Alternatives x) { ... }
+  
+  ... 
+  Alternatives a, b;
+  chan<Alternatives> c,d;
+  ...
+  a = c.read();
+  
+  // the following are all legal:
+  if (a != null)         // test against null
+    ...
+  if (a == null)         // test against null
+    ...
+  b = a;                 // assignment
+  f(a);                  // procedure invocation
+  d.write(a);            // communication
+  if (a is Alternatives) // test with `is'
+    ...
+  protocol A extends B, C;
+  protocol D extends F, G {
+    elephant: {int i; double j;}
+  }
+  A a = new B{...}; // this is legal 
+  B b = new A{...}; // this is illegal
+  C c = new D{...}; // this is illegal 
+  D d = new C{...}; // this is legal
+  protocol MachineA_msg { ... }
+  protocol MachineB_msg { ... }
+  protocol Machine_msg extends MachineA_msg, MachineB_msg;
+  void machine_A(shared chan<Machine_msg>.write log) {
+    ...
+    log.write(new MachineA_msg{ ... });
+    ...
+  }
+  
+  void machine_B(shared chan<Machine_msg>.write log) {
+    ...
+    log.write(new MachineB_msg{ ... });
+    ...
+  }
+  void machine_logger(chan<Machine_msg>.read in) {
+    ...
+    Machine_msg msg = in.read();
+    switch(msg) {
+      ...  // cases for MachineA_msg and MachineB_msg
+    }
+    ...
+  }
+  void main(string args[]) {
+    shared write chan<Machine_msg> c;
+    par {
+      machine_A(c.write);
+      machine_B(c.write);
+      machine_logger(c.read);
+    }
+  }
+  record A {
+    int a;
+  }
+  record B extends A {
+    int b;
+  }
+  protocol A {
+    a: ...
+  }
+  protocol B extends A {
+    b: ...
+  }
+  A myA = new A{a: ...};  //(1) legal
+  A myA = new A{b: ...};  //(2) illegal, no tag b in A
+  A myA = new B{b: ...};  //(3) illegal
+  B myB = new A{a: ...};  //(4) legal
+  B myB = new B{a: ...};  //(5) legal
+  B myB = new B{b: ...};  //(6) legal
+  switch(myA) {
+    case a: ...
+  }
+  A a = new A{...};  
+  B b = new B{...};
+  C c = new C{...};
+  
+  ... (a is A)      // true  (was true for records)
+  ... (a is B)      // true  (was false for records)
+  ... (a is C)      // true  (was false for records)
+ 
+  ... (b is A)      // false (was true for records)
+  ... (b is B)      // true  (was true for records)
+  ... (b is C)      // true  (was false for records)
+ 
+  ... (c is A)      // false (was true for records)
+  ... (c is B)      // false (was true for records)
+  ... (c is C)      // true  (was true for records)
+  void plex(chan<int>.read in, chan<int>.write out) {
+    int x;
+    while (true) {
+      alt (int i=0; i<in.length; i++)
+        x = in[i].read: {
+          out.write(i);   // write the index
+          out.write(x);   // write the value
+        }
+      }
+    }
+  }
+  protocol P {
+    int index;
+    double value;
+  }
+  
+  void plex(chan<int>.read[] in, chan<P>.write out) {
+    while (true) {
+      int val;
+      alt (int i=0; i<in.length; i++) {
+        val = in[i].read(): 
+          out.write(new P{index=i, value=val});
+      }
+    }
+  }
+  record A { int a; }
+  record B { string b; }
+  record C { double c; }
+  protocol P {
+    A: { int index; A a; }
+    B: { int index; B b; }
+    C: { int index; C c; }
+  }
+  
+  void plex(chan<A>.read inA, chan<B>.read inB, 
+            chan<C>.read inC, chan<P>.write out) {
+    A aa;
+    B bb;
+    C cc;
+    while (true) {
+      alt {
+        aa = inA.read(): out.write(new P{A:index=0, a=aa});
+        bb = inB.read(): out.write(new P{B:index=1, b=bb});
+        cc = inC.read{}: out.write(new P{C:index=2, c=cc});
+      }
+    }
+  }
+  record P {
+    int index;
+    Record value;
+  }
+  void plex(chan<Record>.read[] in, chan<P>.write out) {
+    Record ss;
+    while (true) {
+      alt (int i=0; i<in.length; i++) {
+        ss = in[i].read(): out.write(new P{index=i; s=ss});
+      }
+    }
+  }
+  record Alarm {
+    int index;
+    int value;
+  }
+  void monitor!0!(chan<int>[].read in,
+                chan<Alarm>.write out
+                int lo, int hi) {
+    while (true) {
+      int val;
+      alt (int i=0; i<in.length; i++) {
+        val = in[i].read():
+          if (val < lo || val > hi)
+            out.write(new Alarm{index=i, value=val});
+      }
+    }
+  }
+  record Limits {
+    int lo;
+    int hi;
+  }
+  void monitor!1!(chan<int>[].read in,
+                chan<Alarm>.write out
+                chan<Limits>.read limits) {
+    Limits lims = limits.read();
+    while (true) {
+      int val;
+      pri alt {
+        lims = limits.read(): 
+          skip;
+        alt (int i=0; i<in.length; i++) {
+          val = in[i].read():
+            if (val < lims.lo || val > lims.hi)
+              out.write(new Alarm{index=i, value=val});
+        }
+    }
+  }
+  record Control {
+    int index;
+    boolean onoff;
+  }
+  void monitor!2!(chan<int>[].read in,
+                chan<Alarm>.write out
+                chan<Limits>.read limits
+                chan<Control>.read controls) {
+    // allocate boolean pre-guard array
+    boolean[] ok = new boolean[in.length];
+    // set all to true
+    for(int i=0; i<ok.length; i++)
+      ok[i] = true;
+    // read the first set of limits
+    Limits lims = limits.read();
+    while (true) {
+      int val;
+      Control ctrl;
+      pri alt {
+        // new limits
+        lims = limits.read(): 
+          skip;
+        // control message
+        ctrl = controls.read():
+          ok[ctrl.index] = ctrl.onoff;
+        // input from in channels
+        alt (int i=0; i<in.length; i++) {
+          ok[i] & val = in[i].read():
+            if (val < lims.lo || val > lims.hi)
+              out.write(new Alarm{index=i, value=val});
+        }
+    }
+  }
+  class A {
+    int counter;
+    public A() {
+      counter = 0;
+    }    
+    void up() {
+      counter++;
+    }
+    void down() {
+      counter --;
+    }
+    A copy(A a) {
+      A b = new A();
+      b.counter = a.counter;
+      return b;
+    }
+  }
+  // library file
+  .. stuff here I cant remember
+  
+  // this declares A as a ProcessJ external type
+  // name, which eventually translates to ExtA
+  // 
+  extern A ExtA;
+  
+  // this procedure returns a (Java) reference
+  // of this extern type 
+  public ExtA makeA() ;
+  
+  // this is Java
+  public ExtA makeA() {
+    return new A();
+  }
+  // PJ file
+  import  ^^^ that one above
+  
+  public void main(String args[]) {
+    ExtA myA;
+    myA = makeA(); // myA is a Java ref to an A Obj.
+    
+
+  }
+  // Code snippet 1:  
+  ...
+  a = n;
+  a = a + 1;
+  n = a;
+  ...
+  // Code snippet 2:
+  ...
+  b = n;
+  b = b + 1;
+  n = b;
+  ... 
+  // Code snippet 1:  
+  ...
+  critical section (n) {
+    a = n;
+    a = a + 1;
+    n = a;
+  }
+  ...
+  // Code snippet 2:
+  ...
+  critical section (n) {
+    b = n;
+    b = b + 1;
+    n = b;
+  }
+  ... 
+  public class A extends Thread {
+    public void run() {
+      System.put.println("Code run in a thread");
+    }  
+  }
+
+  public class B implements Runnable {
+     public void run() {
+       System.put.println("Code run in a thread");
+    }
+  }
+  public class Main {
+    public static void main(string args[]) {
+      A a = new A();
+      a.start();
+      B b = new B();
+      Thread t = new Thread(b);
+      t.start();  
+    }
+  }
+  class S {
+    public void foo() {
+      for (int i=0; i<100; i++)
+        System.out.println("foo()");
+    }
+    public void bar() {
+      for (int i=0; i<100; i++)
+        System.out.println("bar()");
+    }
+
+    public static void main(String args[]) {
+      final S s = new S();
+      new Thread(){
+        public void run() { s.foo(); }
+      }.start();
+      new Thread(){
+        public void run() { s.bar(); }
+      }.start();
+    }     
+  }
+  class S {
+    synchronized public void foo() {
+      for (int i=0; i<100; i++)
+        System.out.println("foo");
+    }
+    synchronized public void bar() {
+      for (int i=0; i<100; i++)
+        System.out.println("bar");
+    }
+    ...
+  }
+  class S {
+    public void foo() {
+      synchronized(this) {
+        for (int i=0; i<100; i++)
+          System.out.println("foo");
+      }
+    }
+    public void bar() {
+      synchronized (this) {
+        for (int i=0; i<100; i++)
+          System.out.println("bar");
+      }
+    }
+    ...
+  }
+  interface Logger {
+    public void log(Object o, String msg) ;
+  }  
+  public class A {
+    private int x = 0;
+    synchronized void foo(Logger l) {
+      // this should never happen
+      if ( x % 2 != 0) {
+        System.out.println("x is not even");
+        System.exit(1);
+      }
+    }
+
+    // invariant: x is always even after bar()
+    synchronized void bar(Logger l) {
+      x++;
+      l.log(this, "bar");
+      x++;
+      foo(l);
+    }
+  }
+  public class Main {
+    public static void main(String args[]) {
+      Logger l = new Logger|1|();
+      A a = new A();
+      a.bar(l);
+    }
+  }
+
+  public class Logger|1| implements Logger {
+    public void log(Object o, String msg) {
+      ((A)o).foo(this);
+    }
+  }
+  void integrate(chan<int>.read in,
+                 chan<int>.write out) {
+    int total = 0;
+    while (true) {
+      int x;
+      x = in.read();
+      total = total + x;
+      out.write(x);
+    }
+  }
+  chan<int> c;
+  par {
+    P!0!(c.write);
+    P!1!(c.read);
+  }
+  void P!0!(chan<int>.write out) {
+    ...
+    out.write(42);
+    ...
+  }
+  
+  void P!1!(chan<int>.read in) {
+    ...
+    int v;
+    v = in.read();
+    ...
+  }
+  Queue<Processes> runQueue;
+  ...
+  while (!runQueue.isEmpty()) {
+    Process p = runQueue.dequeue();
+    if (p.isReady())
+      p.run();
+    if (!p.isTerminated())
+      runqueue.enqueue(p);
+  }
+  // Code snippet 1:  
+  ...
+  a = n;
+  a = a + 1;
+  n = a;
+  ...
+  // Code snippet 2:
+  ...
+  b = n;
+  b = b + 1;
+  n = b;
+  ... 
+  // Code snippet 1:  
+  ...
+  critical section (n) {
+    a = n;
+    a = a + 1;
+    n = a;
+  }
+  ...
+  // Code snippet 2:
+  ...
+  critical section (n) {
+    b = n;
+    b = b + 1;
+    n = b;
+  }
+  ... 
+  public class A extends Thread {
+    public void run() {
+      System.put.println("Code run in a thread");
+    }  
+  }
+
+  public class B implements Runnable {
+     public void run() {
+       System.put.println("Code run in a thread");
+    }
+  }
+  public class Main {
+    public static void main(string args[]) {
+      A a = new A();
+      a.start();
+      B b = new B();
+      Thread t = new Thread(b);
+      t.start();  
+    }
+  }
+  class S {
+    public void foo() {
+      for (int i=0; i<100; i++)
+        System.out.println("foo()");
+    }
+    public void bar() {
+      for (int i=0; i<100; i++)
+        System.out.println("bar()");
+    }
+
+    public static void main(String args[]) {
+      final S s = new S();
+      new Thread(){
+        public void run() { s.foo(); }
+      }.start();
+      new Thread(){
+        public void run() { s.bar(); }
+      }.start();
+    }     
+  }
+  class S {
+    synchronized public void foo() {
+      for (int i=0; i<100; i++)
+        System.out.println("foo");
+    }
+    synchronized public void bar() {
+      for (int i=0; i<100; i++)
+        System.out.println("bar");
+    }
+    ...
+  }
+  class S {
+    public void foo() {
+      synchronized(this) {
+        for (int i=0; i<100; i++)
+          System.out.println("foo");
+      }
+    }
+    public void bar() {
+      synchronized (this) {
+        for (int i=0; i<100; i++)
+          System.out.println("bar");
+      }
+    }
+    ...
+  }
+  interface Logger {
+    public void log(Object o, String msg) ;
+  }  
+  public class A {
+    private int x = 0;
+    synchronized void foo(Logger l) {
+      // this should never happen
+      if ( x % 2 != 0) {
+        System.out.println("x is not even");
+        System.exit(1);
+      }
+    }
+
+    // invariant: x is always even after bar()
+    synchronized void bar(Logger l) {
+      x++;
+      l.log(this, "bar");
+      x++;
+      foo(l);
+    }
+  }
+  public class Main {
+    public static void main(String args[]) {
+      Logger l = new Logger|1|();
+      A a = new A();
+      a.bar(l);
+    }
+  }
+
+  public class Logger|1| implements Logger {
+    public void log(Object o, String msg) {
+      ((A)o).foo(this);
+    }
+  }
+  void integrate(chan<int>.read in,
+                 chan<int>.write out) {
+    int total = 0;
+    while (true) {
+      int x;
+      x = in.read();
+      total = total + x;
+      out.write(x);
+    }
+  }
+  chan<int> c;
+  par {
+    P!0!(c.write);
+    P!1!(c.read);
+  }
+  void P!0!(chan<int>.write out) {
+    ...
+    out.write(42);
+    ...
+  }
+  
+  void P!1!(chan<int>.read in) {
+    ...
+    int v;
+    v = in.read();
+    ...
+  }
+  Queue<Processes> runQueue;
+  ...
+  while (!runQueue.isEmpty()) {
+    Process p = runQueue.dequeue();
+    if (p.isReady())
+      p.run();
+    if (!p.isTerminated())
+      runqueue.enqueue(p);
+  }
+// this is include/std/arithmetic.pj
+#pragma LIBRARY;
+#pragma FILE "arithmetic";
+#pragma LANGUAGE "processj";
+package std;
+
+public int add(int a, int b) {
+	return a + b;
+}
+...
+// this is /opt/ProcessJ/include/std/random.pj
+#pragma LIBRARY;
+#pragma NATIVE;
+#pragma FILE "random";
+#pragma LANGUAGE "JVM";
+package std;
+
+public native void initRandom(long seed);
+public native long longRandom() ;
+  package std;
+
+  public class random {
+    private static java.util.Random r = 
+                           new java.util.Random(0);
+
+    public static synchronized void 
+                           initRandom(long seed) {
+      r = new java.util.Random(seed);
+    }
+
+    public static long longRandom() {
+      return r.nextLong();
+    }
+  }
+  import std.random;
+  import std.io;
+  
+  public void main(string args[]) {
+    initRandom(10000);
+    for (int i=0; i<10; i++) {
+      println("next random number: " + longRandom());
+    }
+  } 
+  #pragma LIBRARY "String";
+  #pragma NATIVELIB "java/lang/String.class"
+  #pragma FILE "strings";
+  #pragma LANGUAGE "JVM";
+  package std;
+  #pragma LIBRARY "String";
+  #pragma NATIVELIB "java/lang/String.class"
+  #pragma FILE "strings";
+  #pragma LANGUAGE "JVM";
+  package std;	
+
+  public native string makeString() ;
+  public native string makeString(string str) ;
+  public native int length(string str) ;
+  ...
+  package std;
+
+  public class strings {
+    public static makeString String() {
+      return new String();
+    }
+
+    public static makeString String(String str) {
+      return new String(str); 
+    }
+
+    public static int length(String str) {
+      return __self.length();
+    }
+
+    ...
+  }
+  void f(chan<mobile chan<int>.read>.read in,
+         chan<mobile chan<int>.read>.write out) { 
+    mobile chan<int>.read input;
+    input = in.read();
+    int x, y=0;
+    x = input.read();
+    while (x > 0) {
+      y = y + x;
+      x = input.read();
+    }
+    out.write(input);
+  }
+    ...
+    out.write(input);
+    "input = null;"
+  }
+  ...
+  out.write(input);
+  x = input.read();  // this process no longer has the channel
+  ...
+  mobile chan<int> c;  // declare a mobile channel
+  chan<mobile chan<int>.read> mobileChan;
+  void reader(chan<mobile chan<int>.read>.read in) {
+    mobile chan<int>.read input;
+    input = in.read();
+    int x = 0;
+    while (input.read() > 0)
+      x++;
+  }
+
+  void writer(chan<mobile chan<int>.write>.read out) {
+    mobile chan<int>.write output;
+    output = out.read();
+    x = 100;
+    while (x > 0) {
+      output.write(x);
+      x--;
+    }
+  }
+
+  void main(string args[]) {
+    mobile chan<int> c;
+    chan<mobile chan<int>.read> in;
+    chan<mobile chan<int>.read> out;
+    par {
+      reader(in.read);    
+      writer(out.read);  
+      in.write(c.read);
+      out.write(c.write);
+    }
+  }
+  void proc(chan<mobile chan<int>.write>.read input,
+            chan<mobile chan<int>.write>.write output) {
+    int x;
+    // some complicated computation that results in x.
+    mobile chan<int>.write out;
+    out = input.read();
+    out.write(x);
+    output.write(out);
+  }
+
+  void main(string ags[]) {
+    mobile chan<int> c;
+    chan<mobile chan<int>.write> chans[] = 
+                   new chan<mobile chan<int>.write>[11];
+    int total = 0;
+    par {
+      par for(int i=1; i<=10; i++)
+        proc(chans[i-1].read, chans[i].write);
+      {
+        int val;
+        boolean done = false;
+        mobile chan<int>.write w;
+
+        
+        while (!done) {
+          alt {
+            v = c.read(): total = total + v;
+            w = chans[10].read(): done = true;
+          }
+        }
+      }
+    }
+  }
+  chan<mobile chan<int>.write> chans[] = 
+                          new chan<mobile chan<int>.write>[11];      
+  chans[0].write(c.write); // send c.write to P_1                
+  while (!done) {
+    alt {
+      v = c.read(): total = total + v;
+      w = chans[10].read(): done = true;
+    }
+  }
+interface Logger {
+  public void log(Object o, String msg) ;
+}
+
+public class A {
+  private int x = 0;
+  synchronized public void foo(Logger l) {
+    if ( x % 2 != 0) {
+      System.out.println("x is not even");
+      System.exit(1);
+    }
+  }
+
+  synchronized public void bar(Logger l) {
+    x++;
+    l.log(this, "bar()");
+    x++;
+    foo(l);
+  }
+}
+public class Logger1 implements Logger {
+  public void log(Object o, String msg) {
+    ((A)o).foo(this);
+  }
+}
+
+public class Main {
+  public static void main(String args[]) {
+    Logger l = new Logger1();
+    A a = new A();
+    a.bar(l);
+  }
+}
+  barrier b;
+  sync(b);
+  ...
+  void f() {
+    barrier b;
+    par enroll b {
+      P!1!(b,...);
+      P!2!(b,...);
+      P!3!(b,...);
+    }
+  }
+  ...
+  barrier b,c;
+  par enroll b,c {
+    f(b,c,...);
+    par for (int i=0;i<100; i++) enroll b,c {
+      g(b,c,...);
+    }
+  }
+  import std.io;
+
+  public void writer(chan<int>.write out) {
+    out.write(42);
+    println("Number written");
+  }
+
+  public void reader(chan<int>.read in) {
+    int v;
+    v = in.read();
+    println(v);
+  }
+
+  public void main(string args[]) {
+    chan<int> c;
+    par {
+      writer(c.write);
+      reader(c.read);
+    }
+  }
+  import std.io;
+  
+  public void writer(chan<int>.write out,
+                     chan<boolean>.read ack) {
+    out.write(42);
+    boolean b = ack.read();
+    println("Number written");
+  }
+  
+  public void reader(chan<int>.read in, 
+                     chan<boolean>.write ack) {
+    int v;
+    v = in.read();
+    println(v);
+    ack.write(true);
+  }
+  
+  public void main(string args[]) {
+    chan<int> c;
+    chan<boolean> ack;
+    par {
+      writer(c.write, ack.read);
+      reader(c.read, ack.write);
+    }
+  }
+  public void reader(chan<int>.read in) {
+    int v;
+    v = in.read({println(v);});
+  }
+  public void writer(chan<int>.write out) {
+    out.write(42);
+    println("Number written");
+  }
+  void interceptor(chan<int>.read fromA,
+                   chan<int>.write toB.
+                   chan<int>.write log) {
+    while (true) {
+      int val;
+      val = fromA.read();
+      par {
+        log.write(val);
+        toB.write(val);
+      }
+    }
+  }
+  void interceptor(chan<int>.read fromA,
+                   chan<int>.write toB.
+                   chan<int>.write log) {
+    while (true) {
+      int val;
+      val = fromA.read({log.write(val);
+                        toB.write(val);});
+    }
+  }
+const int max = 5;
+  void philosopher(int id, 
+                   chan<boolean>.write left,
+                   chan<boolean>.write right) {
+    while (true) {
+      println(id + ": I am thinking");
+      par {                // pick up forks
+        left.write(true);   
+        right.write(true);
+      }
+      println(id + ": I am eating");
+      par {                // put down forks
+        left.write(true);
+        right.write(true);
+      }
+    }
+  }
+  void fork(int i,
+            chan<boolean>.read left,
+            chan<boolean>.read right) {
+    boolean any;
+    while (true) {
+      alt {
+        any = left.read(): {   // right phil picks up
+          println(i + ": picked up from the right."); 
+          any = left.read();   // right phil puts down
+          println(i + ": put down from the right."); 
+        }
+        any = right.read(): {  // left phil picks up
+          println(i + ": picked up from the left."); 
+          any = right.read();  // left phil puts down
+          println(i + ": put down from the left.");      
+        }
+      }
+    }
+  }
+  void college() {
+    chan<boolean>[] left = new chan<boolean>[max];
+    chan<boolean>[] right = new chan<boolean>[max];
+    par {
+      par for(int i=0; i<max; i++) {
+        philosopher(i, left[i].write, right[i].write);
+      }
+      par for(int i=0; i<max; i++) {
+        fork(i, left[i].read, right[(i+1)%max].read);
+      }
+    }
+  }
+  void securePhilosopher(int id, 
+                         chan<boolean>.write left,
+                         chan<boolean>.write right,
+                         chan<boolean>.write down,
+                         chan<boolean>.write up) {
+    while (true) {
+      println(id + ": I am thinking");
+      println(id + ": I want to sit down.");
+      write.down(true);    // ask to sit down
+      par {                // pick up forks
+        left.write(true);   
+        right.write(true);
+      }
+      println(id + ": I am eating");
+      par {                // put down forks
+        left.write(true);
+        right.write(true);
+      }
+      println(id + ": I want to get up.");
+      up.write(true);      // get up
+    }
+  }
+  void security(chan<boolean>.read[] up,
+                chan<boolean>.read[] down) {
+    const int maxSatDown = up.length - 1;
+    int satDown = 0;
+    boolean any;
+    while (true) {
+      alt (int i = 0; i < up.length; i++) {
+        alt {
+          (satDown < maxSatDown) & any = down[i].read():
+            satDown = satDown + 1;
+          any = up[i].read():
+            SatDown = satDown - 1;
+        }
+      }
+    }
+  }
+  void secureCollege() {
+    chan<boolean>[] left = new chan<boolean>[max];
+    chan<boolean>[] right = new chan<boolean>[max];
+    chan<boolean>[] down = new chan<boolean>[max];
+    chan<boolean>[] up = new chan<boolean>[max];
+    par {
+      par for(int i=0; i<max; i++) {
+        securePhilosopher(i, left[i].write, right[i].write,
+                       down[i].write, up[i].write);
+      }
+      par for(int i=0; i<max; i++) {
+        fork(left[i].read, right[(i+1)%max].read);
+      }
+      security(up.read, down,read);
+    }
+  }
+  for (int i=0; i<5; i++) 
+    f(i);
+  f(0);
+  f(1);
+  f(2);
+  f(3);
+  f(4);
+  par {
+    f(0);
+    f(1);
+    f(2);
+    f(3);
+    f(4);
+  }
+  par for(int i=0; i<5; i++) 
+    f(i);
+  ...
+  int lower = c.read();
+  int upper = c.read();
+  par for (int i = lower; i<upper; i++)
+    f(i);
+  ...
+  int x[];
+  ...
+  par for (int i = 0; i<x.length-1; i++) {
+    x[i] = x[i] + x[i+1];
+  }  
+  const int MAX = 16;
+  const int END_MARKER = 255;
+
+  void sort_pump(chan<int>.read in, 
+                 chan<int>.write out) {
+    chan<int> c[] = new chan<int>[MAX-2];
+    par {
+      cell(in, c[0].write);
+      par for (int i=1; i<MAX-2; i++)
+        cell(c[i-1].read, c[i].write);
+      cell(c[max-3].read, out);
+    }
+  }
+  void cell(chan<int>.read in, chan<int>.write out) {
+    while (true) {
+      int largest;
+      largest = in.read();
+      while (largest != END_MARKER) {
+        int next;
+        next = in.read();
+        if (largest >= next)
+          out.write(next);
+        else {
+          out.write(largest);
+          largest = next;
+        }
+      }
+      out.write(END_MARKER);
+    }
+  }
+  void substitute(const int a, const int b,
+                  chan<int>.read in, chan<int>.write out) {
+    int x;
+    while (true) {
+      x = in.read();
+      if (x == a)
+        out.write(b);
+      else
+        out.write(x);
+    }
+  }
+  void greater(chan<int>.read in!0!, 
+               chan<int>.read in!1!,
+               chan<int>.write small, 
+               chan<int>.write large) {
+    int x!0!, x!1!;
+    par {
+      x!0! = in!0!.read();
+      x!1! = in!1!.read();
+    }
+    if (x!0! < x!1!) 
+      par {
+        small.write(x!0!):
+        large.write(x!1!);
+      }
+    else 
+      par {
+        small.write(x!1!);
+        large.write(x!0!);
+      }
+  }               
+!\hspace*{0.38cm}! void even_odd(chan<int>.read[] in, 
+!\hspace*{0.38cm}!               chan<int>.write[] out) {
+!\,\,\tikz\draw[color=black,shading=radial,inner color=white, outer color=red!60!gray,color=red!60!gray] (0,0) circle (.7ex);!   chan<int>[] c = new chan<int>[MAX-2];
+!\hspace*{0.38cm}!   par {
+!\,\,\tikz\draw[color=black,shading=radial,inner color=white, outer color=green!60!gray,color=green!60!gray] (0,0) circle (.7ex);!     greater(in[0], in[1], out[0], c[0].write);
+!\hspace*{0.38cm}!     par for (int i=2; i< (MAX/2)-2; i=i+2) {
+!\,\,\tikz\draw[color=black,shading=radial,inner color=white, outer color=blue!60!gray,color=blue!60!gray] (0,0) circle (.7ex);!       greater(in[i], in[i+1], c[i-1].write, c[i].write);
+!\hspace*{0.38cm}!     }
+!\,\,\tikz\draw[color=black,shading=radial,inner color=white, outer color=orange!60!gray,color=orange!60!gray] (0,0) circle (.7ex);!     greater(in[MAX-2], in[MAX-1], c[MAX-3].write, out[MAX-1]);
+!\hspace*{0.38cm}!     par for (int i=1; i< (MAX/2)-1; i=i+2) {
+!\,\,\tikz\draw[color=black,shading=radial,inner color=white, outer color=pink!100!gray,color=pink!100!gray] (0,0) circle (.7ex);!       greater(c[i-1].read, c[i].read, out[i], out[i+1]);
+!\hspace*{0.38cm}!     }      
+!\hspace*{0.38cm}!   }
+!\hspace*{0.38cm}! }
+!\hspace*{0.38cm}!  void sort_grid(chan<int>.read[] in, 
+!\hspace*{0.38cm}!                 chan<int>.write[] out) {
+!\,\,\tikz\draw[color=black,shading=radial,inner color=white, outer color=red!60!gray,color=red!60!gray] (0,0) circle (.7ex);!    chan<int>[][] c = new chan<int>[MAX/2-1][MAX];
+!\hspace*{0.38cm}!    par {
+!\,\,\tikz\draw[shading=radial,inner color=white, outer color=green!60!gray,color=green!60!gray] (0,0) circle (.7ex);!      even_odd(in, c[0].write);
+!\hspace*{0.38cm}!      par for (int i=0; i< (MAX/2)-2; i++) {
+!\,\,\tikz\draw[shading=radial,inner color=white, outer color=blue!60!gray,color=blue!60!gray] (0,0) circle (.7ex);!        even_odd(c[i].read, c[i+1].write);
+!\hspace*{0.38cm}!      }
+!\,\,\tikz\draw[shading=radial,inner color=white, outer color=pink!100!gray,color=pink] (0,0) circle (.7ex);!      odd_even(c[MAX/2-2].read, out);
+!\hspace*{0.38cm}!    }
+!\hspace*{0.38cm}!  }
+  alt {
+    x[0] = in[0].read(): ...
+    x[1] = in[1].read(): ...
+    x[2] = in[2].read(): ...
+    x[3] = in[3].read(): ...
+  }
+  alt (int i=0; i<in.length; i++) {
+    x[i] = in[i].read(): ...
+  }
+  alt {
+    x[0] = in[0].read(): ...
+    x[1] = in[1].read(): ...
+    ...
+    x[n-1] = in[n].read(): ...
+  }
+  void plex(chan<int>.read[] in, chan<int>.write out) {
+    int x;
+    while (true) {
+      alt (int i=0; i<in.length; i++)
+        x = in[i].read: {
+          out.write(i);   // write the index
+          out.write(x);   // write the value
+        }
+      }
+    }
+  }
+  void de_plex(chan<int>.read in, 
+               chan<int>.write[] out) {
+    int i,x;
+    while (true) {
+      i = in.read();
+      x = in.read();
+      out[i].write(x);
+    }
+  } 
+  alt {
+    guard!0!: ...
+    alt {
+      guard!1!: ...
+      guard!2!: ...
+    }
+    guard!3!: ...
+  }
+  alt {
+    guard!0!: ...
+    guard!1!: ...
+    guard!2!: ...
+    guard!3!: ...
+  }
+  pri alt {
+    guard!0!: ...
+    alt {
+      guard!1!: ...
+      guard!2!: ...
+    }
+    guard!3!: ...
+  }
+  pri alt {
+    guard!0!: ...
+    guard!1!: ...
+    guard!2!: ...
+    guard!3!: ...
+  }
+  alt {
+    guard!0!: ...
+    pri alt {
+      guard!1!: ...
+      guard!2!: ...
+    }
+    guard!3!: ...
+  }
+  alt {
+    guard!0!: ...
+    alt (int i=0; i<n; i++) 
+      rep_guard!i!: ...
+    guard!1!: ...
+  }
+  alt {
+    guard!0!: ...
+    alt {
+      rep_guard!0!: ...
+      rep_guard!1!: ...
+      ...  
+      rep_guard!n-1!: ...     
+    }
+    guard!1!: ...
+  }
+  alt {
+    guard!0!: ...
+    rep_guard!0!: ...
+    rep_guard!1!: ...
+    ...  
+    rep_guard!n-1!: ...     
+    guard!1!: ...
+  }
+  timer t;
+  long time = t.read() + 10000; 
+  boolean any; 
+  int x;
+  alt {
+    t.timeout(time): ...          // deal with timeout
+    any = pause.read(): ...       // deal with pause read
+    alt (int=0; i<a.length; i++) 
+      x = a[i].read(): ...        // deal with a[i] read
+  }
+  int x;
+  alt {
+    alt (int i=0; i<a.length; i++)
+      x = a[i].read(): ...          // deal with it
+    alt (int i=0; i<b.length; i++)
+      x = b[i].read(): ...          // deal with it
+  }
+  int x;
+  alt (int i=0; i<a.length; i++)
+    alt (int j=0; j<a[i].length; j++)
+      x = a[i][j].read(): ...     // deal with it
+  void reindeer(const int id, 
+                barrier just_reindeer, 
+                barrier santa_reindeer, 
+                shared chan<int>.write to_santa, 
+                shared chan<ReindeerMsg>.write report) {
+    while (true) {
+      // "I'm am on holiday" + id
+      report.write(new ReindeerMsg{holiday: {id=id});
+      // sleep for a random amount of time
+      random_wait(HOLIDAY_TIME);
+      // "I'm back from holiday" + id
+      report.write(new ReindeerMsg{deer_ready: {id=id}});
+      // wait for all deer to return
+      sync(just_reindeer)
+      // send id to Santa (to get harnessed)
+      to_santa.write(id);
+      // wait for the others to get harnessed
+      sync(santa_reindeer)
+      // "I'm delivering toys" + id
+      report.write(new ReindeerMsg{deliver: {id=id}});
+      // until Santa takes us all home
+      sync(santa_reindeer);
+      // "I'm back from the sleigh run" + id
+      report.write(new ReindeerMsg{deer_done: {id=id}}); 
+      //get unharnessed
+      to_santa.write(id);
+    }
+  }
+  void random_wait(long wait) {
+    timer t;
+    t.timeout(t.read() + wait);
+  }
+  void santa(chan<int>.read from_reindeer,
+             barrier santa_reindeer,
+             ... // elf connections
+             shared chan<SantaMsg>.write report) {
+    while (true) {
+      int id;
+      boolean any;
+      pri alt {
+        // reindeer or elves show up
+        // deal with the reindeer
+        // deal with the elves
+      }
+    }
+  }
+  // deal with the reindeer
+  // the first reindeer is here 
+  id = from_reindeer.read(): {
+    // "Ho, Ho, Ho, the reindeer are here"
+    report.write(new SantaMsg{reindeer_ready: {}});
+    // "Harnessing reindeer " + id
+    report.write(new SantaMsg{harness: {id=id}});
+    // for the remaining deer
+    for (int i=0; i< N_REINDEER-1; i++) {
+      // receive their id
+      id = from_reindeer.read();
+      // "Harnessing reindeer " + id
+      report.write(new SantaMsg{harness: {id=id}});
+    }
+    // "Mush Mush"
+    report.write(new SantaMsg{mush_mush: {}});
+    // let the reindeer know all are harnessed
+    sync(santa_reindeer);
+    // deliver toys for some random time
+    random_wait(DELIVERY_TIME);
+    // "Whoa ... let's go home"
+    report.write(new SantaMsg{woah: {}});
+    // signal everyone to return home
+    sync(santa_reindeer);
+    // for each deer
+    for (int i=0; i< N_REINDEER; i++) {
+      // receive their id
+      id = from_reindeer.read({
+        // "Unharnessing reindeer " + id
+        report.write(new SantaMsg{unharness: {id=id}});});
+    }
+  }
+  void p_bar(const int x, 
+             chan<bool>.read a,
+             chan<bool>.read b) {
+    bool any;
+    while (true) {
+      for (int i=0; i<x; i++)
+        any = a.read();
+      for (int i=0; i<x; i++)
+        any = b.read();
+    }
+  }
+  void synchronize(shared chan<boolean>.write a,
+                   shared chan<boolean>.write b) {
+    a.write(true);
+    b.write(true);
+  }
+  void xp_bar(const int n, 
+              chan<boolean>.read a,
+              chan<boolean>.read b,
+              chan<boolean>.write ping) {
+    while (true) {
+      boolean any;
+      for (int i=0; i<n; i++) 
+        any = a.read();
+      ping.write(true);
+      for (int i=0; i<n; i++) 
+        any = b.read(); 
+    }
+  }            
+  boolean any;
+  any = ping.read({ ... process triggered by barrier});
+  void elf(const int id,
+           shared chan<boolean>.write just_elves_a,
+           shared chan<boolean>.write just_elves_b,
+           shared chan<int>.write to_santa,
+           shared chan<ElfMsg>.write report) {
+    while (true) {
+      // "I'm working" + id
+      report.write(new ElfMsg{working: {id=id}}); 
+      // until I have a problem
+      random_wait(WORKING_TIME);
+      // "I want to consult with Santa" + id
+      report.write(new ElfMsg{elf_ready: {id=id}});
+      // wait for two other elves
+      synchronize(just_elves_a, just_elves_b);
+      // say hello to Santa
+      to_santa.write(id);
+      // wait for the other elves to say hello
+      synchronize(just_elves_a, just_elves_b);
+      // "I'm done consulting" + id
+      report.write(new ElfMsg{elf.done: {id=id}
+      // say goodbye to Santa
+      to_santa.write(id);
+    }
+  }
+  chan<boolean>.read just_elves_ping,
+  chan<int>.read from_elves,
+  shared chan<boolean>.write santa_elves_a,
+  shared chan<boolean>.write santa_elves_b,
+  // deal with the elves
+  // a party of elves is at the door
+  any = just_elves_ping.read(): {
+    // "Ho, Ho, Ho, some elves are here"
+    report.write(new SantaMsg{elves_ready: {}});
+    for (int i=0; i<G_ELVES; i++) {
+      // receive his id
+      id = from_elves.read();
+      // "Hello elf" + id
+      report.write(new SantaMsg{greet: {id=id}});
+    }
+    // "Consulting with elves"
+    report.write(new SantaMsg{consulting: {}});
+    // let elves party know all are here
+    synchronize(santa_elves_a, santa_elves_b);
+    // consult for a random time
+    random_wait(CONSULTATION_TIME);
+    // "Ok, all done - thanks"
+    report.write(new SantaMsg{santa_done: {}});
+    // let elves know consultancy is over 
+    synchronize(santa_elves_a, santa_elves_b);
+    // for each elf in the consult party
+    for (int i=0; i<G_ELVES; i++) {
+      // receive his id
+      id = from_elves.read({
+        // "Goodbye elf " + id
+        report.write(new SantaMsg{goodbye: {id=id}});});
+    }
+  }
+  void santa_system(shared chan<Message>.write report) {
+    barrier just_reindeer, santa_reindeer;
+    shared write chan<int> reindeer_!2!_santa;
+    // extended partial barrier channels for just_elves
+    shared write cham<boolean> just_elves_a, just_elves_b;    
+    // partial barrier channels for santa and elves
+    chan<boolean> just_elves_ping;
+    shared write chan<boolean> santa_elves_a, santa_elves_b;
+    shared write chan<int> elves_!2!_santa;
+    par {
+      par enroll (santa_reindeer) {
+        santa(reindeer_!2!_santa.read, santa,reindeer,
+              just_elves_pring.read, elves_!2!_santa.read,
+              santa_elves_a.write, santa_elves_b.write,
+              report.write);
+        par for (int i=0; i<N_REINDEER; i++) 
+          enroll (just_reindeer, santa_reindeer)
+            reindeer(i, just_reindeer, santa_reindeer,
+                     reindeer_!2!_santa.write, 
+                     report.write);
+        par for(int i=0; i<N_ELVES; i++) 
+          elf(i, just_elves_a.write, just_elves_b.write,
+              santa_elves_a.write, santa_elves_b.write,
+              elves_!2!_santa.write, 
+              report.write);
+        xp_bar(G.ELVES, just_elves_a.read, just_elves_b.read, 
+               just_elves_ping.write);
+        p_bar(G.ELVES + 1, 
+              santa_elves_a.read, santa_elves_b.read);
+      }
+    }
+  }
+  shared write chan<int> c; // many-to-one (shared write)
+  par {
+    par for (int i=0; i< n; i++) 
+      smiley(c.write);
+    server(c.read);
+  }
+  public void server(chan<int>.read in) {
+    // normal coding using in
+  }
+  public void smiley(shared chan<int>.write out) {
+    ...
+  }
+  shared read chan<int> c; // one-to-many (shared read)
+  par {
+    par for(int i=0; i<n; i++) 
+      smiley!2!(c.read);
+    generator(c.write);
+  }
+  public void generator(chan<int>.write out) {
+    // use out as a regular one-to-one channel
+  }
+  public void smiley!2!(shared chan<int>.read in) {
+    ...
+  }
+  shared chan<int> c; // many-to-many (both ends shared)
+  public void greenSmiley(shared chan<int>.write out) {
+    ...
+  }
+  
+  public void redSmiley(shared chan<int>.read in) {
+    ...
+  }

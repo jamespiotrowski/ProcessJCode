@@ -1,0 +1,5 @@
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/code/ProcessJ/ProcessJCode/bugs/MultiDimesionalArrays$ /mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pj MultiDimensionalArrays_1
+Exception in thread "Thread-0" java.lang.ClassCastException: class [Lprocessj.runtime.PJOne2OneChannel; cannot be cast to class [[[Lprocessj.runtime.PJOne2OneChannel; ([Lprocessj.runtime.PJOne2OneChannel; and [[[Lprocessj.runtime.PJOne2OneChannel; are in unnamed module of loader 'app')
+        at MultiDimensionalArrays_1$_proc$main1231766951.run(Unknown Source)
+        at processj.runtime.Scheduler.run(Scheduler.java:56)
+^X^Cjamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/code/ProcessJ/ProcessJCode/bugs/MultiDimesionalArrays$

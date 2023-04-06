@@ -1,0 +1,17 @@
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/Code/ProcessJ/ProcessJCode/Bugs/ReturnValues$ /mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pjc ReturnValue1.pj
+-- Setting absolute path, file and package name for 'ReturnValue1.pj'.
+-- Rewriting channel arrays local decls
+** COMPILATION COMPLITED SUCCESSFULLY **
+ProcessJ compilation successful
+/home/jamespiotrowski/workingpj/ReturnValue1.java:126: error: incompatible types: unexpected return value
+            return _ld$an1 + _ld$bn2;
+                           ^
+1 error
+Java compilation successful
+Rewriting successful
+Instrumentation successful
+*.class : no such file or directory
+JAR file creation succesfull
+Output written to ReturnValue1.jar
+mv: cannot stat '/home/jamespiotrowski/workingpj/ReturnValue1.jar': No such file or directory
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/Code/ProcessJ/ProcessJCode/Bugs/ReturnValues$  

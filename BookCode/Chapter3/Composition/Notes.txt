@@ -1,0 +1,10 @@
+3.7.4
+
+Page 78
+
+Page 80:
+ - Says "public proc" should say "public void"
+
+Page 81:
+ - Says "proc" instead of "public void"
+

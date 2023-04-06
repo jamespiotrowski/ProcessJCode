@@ -1,0 +1,1 @@
+Your variables need to be final for them to work in the switch statement. I did a quick - and dirty - rewrite and it worked, but I don't like it he he. Dr. Pedersen will need to talk to Carlos since he has been cleaning up the code (but I will give him my latest version on Monday)

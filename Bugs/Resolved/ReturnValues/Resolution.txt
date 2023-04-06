@@ -1,0 +1,1 @@
+At the moment, you can't return values from a function/method that becomes a PJProcess. Dr. Pedersen and I talked about this in the past... and it stayed in the past he he :)

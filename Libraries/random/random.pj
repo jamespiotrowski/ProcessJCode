@@ -1,0 +1,11 @@
+#pragma LIBRARY;
+#pragma NATIVE;
+#pragma FILE "random";
+#pragma LANGUAGE "JVM";
+
+package std;
+
+public native void initRandom(long seed);
+public native long longRandom();
+public native double gaussianRandom();
+public native double gaussianRandom(double mean, double standardDeviation);

@@ -15,6 +15,10 @@ import std.*;
  * make a library for random numbers
  */
 
+double xavierInitialization(int numInputs){
+    return gaussianRandom() * sqrt(1.0 / (double)numInputs);
+}
+
 void FullyConnectedNeuralNetwork(const int inputSize, const int[] layerSizes){
     print("<FullyConnectedNeuralNetwork>: Creating Neural Network with input size: {" + inputSize + "} and shape: { ");
     for(int i = 0; i < layerSizes.size; i++){
@@ -109,4 +113,24 @@ public void main(string[] args){
     layers[0] = 40; layers[1] = 20; layers[2] = 10;
 
     FullyConnectedNeuralNetwork(inputSize, layers);
+    println(xavierInitialization(728));
+    println(xavierInitialization(728));
+    println(xavierInitialization(728));
+    println(xavierInitialization(728));
+    println(xavierInitialization(728));
+    println(xavierInitialization(40));
+    println(xavierInitialization(40));
+    println(xavierInitialization(40));
+    println(xavierInitialization(40));
+    println(xavierInitialization(40));
+    println(xavierInitialization(20));
+    println(xavierInitialization(20));
+    println(xavierInitialization(20));
+    println(xavierInitialization(20));
+    println(xavierInitialization(20));
+    println(xavierInitialization(10));
+    println(xavierInitialization(10));
+    println(xavierInitialization(10));
+    println(xavierInitialization(10));
+    println(xavierInitialization(10));
 }

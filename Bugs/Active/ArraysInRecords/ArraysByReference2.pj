@@ -1,0 +1,38 @@
+import std.*;
+
+record testRecord{
+    double[] arr;
+}
+
+/*
+void printArr(testRecord tr){
+    string x = "{ ";
+    for(int i = 0; i < tr.arr.size; i++){
+        x = x + tr.arr[i] + " ";
+    }
+    x = x + "}";
+    println(x);
+}
+
+void foo(testRecord tr){
+    for(int i = 0; i < tr.arr.size; i++){
+        tr.arr[i] = 947.0;
+    }
+}
+*/
+
+public void main(string[] args){
+    double[] myArr = new double[3];
+    myArr[0] = -1.0;
+    myArr[1] = -1.0;
+    myArr[2] = -1.0;
+
+    testRecord tr;
+    tr = new testRecord { arr = myArr };
+   
+    /*
+    printArr(tr);
+    foo(tr);
+    printArr(tr);
+    */
+}

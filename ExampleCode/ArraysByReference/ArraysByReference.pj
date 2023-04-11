@@ -1,0 +1,26 @@
+import std.*;
+
+void printArr(double[] arr){
+    string x = "{ ";
+    for(int i = 0; i < arr.size; i++){
+        x = x + arr[i] + " ";
+    }
+    x = x + "}";
+    println(x);
+}
+
+void foo(double[] arr){
+    for(int i = 0; i < arr.size; i++){
+        arr[i] = 947.0;
+    }
+}
+
+public void main(string[] args){
+    double[] myArr = new double[3];
+    myArr[0] = -1.0;
+    myArr[1] = -1.0;
+    myArr[2] = -1.0;
+    printArr(myArr);
+    foo(myArr);
+    printArr(myArr);
+}

@@ -1,0 +1,33 @@
+import std.*;
+
+public record writingChannel{
+    chan<int>.write out;
+}
+
+void foo(chan<writingChannel>.write out){
+    writingChannel o = out.read();
+    if(o == null){
+        println("Null");
+    }
+    else{
+        println("Not null");
+    }
+    println("Dude");
+}
+
+public void main(string[] args){
+    
+    chan<writingChannel> wcc;
+    chan<int> i;
+    writingChannel wc;
+    par{
+        foo(wcc.write);
+        wcc.write(wc);
+    }
+    
+    writingChannel wc1 = new writingChannel{ out = i.write };
+    par{
+        foo(wcc.write);
+        wcc.write(wc1);
+    }
+}

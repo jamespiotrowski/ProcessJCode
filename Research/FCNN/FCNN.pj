@@ -1,22 +1,72 @@
 import std.*;
 
-/*
- * First, initialize weights with value that is (centered around value 0 with variance 1)
- * mean is 0, standard deviation is 1
- * https://www.socscistatistics.com/utilities/normaldistribution/default.aspx
- * https://www.calculatorsoup.com/calculators/statistics/variance-calculator.php
+/**********************************************
+ * layerSegmentComponent
  * 
- * then, multiply value by sqrt(1/n) where n is the number of inputs to the node
- * so, for a node in the first layer, it would be like (-0.2) * sqrt(1 / 728)
- * 
- * https://www.youtube.com/watch?v=8krd5qKVw-Q&t=352s
- * 
- * https://levelup.gitconnected.com/how-do-computers-generate-random-numbers-a72be65877f6
- * make a library for random numbers
- */
+ *      record to store parameters needed
+ *      for a layer segment
+**********************************************/
+record layerSegmentComponent{
+    int minNode                         // first node to compute
+    , int maxNode                       // last node to compute
+    , chan<double>[][] inputChannels    // channels to read input from
+    , double[][] w                      // weights
+    , double[] b                        // bias
+    , double[] s                        // storage for summation
+    , double[] y                        // output for channels
+    , chan<double>[] outputChannls      // Channel to write out... needs to write nextLayerSize times
+    , int nextLayerSize                 // Number of nodes to write to
+}
 
+/**********************************************
+ * xavierInitialization (FUNCTION)
+ * 
+ *      init function for neural network
+ *      weights to help prevent vanishing
+ *      gradient.
+ * 
+ *      Reference: https://www.youtube.com/watch?v=8krd5qKVw-Q&t=352s
+**********************************************/
 double xavierInitialization(int numInputs){
     return gaussianRandom() * sqrt(1.0 / (double)numInputs);
+}
+
+/**********************************************
+ * zeroOutArray (FUNCTION)
+ * 
+ *      function to quickly reset an array
+ *      needed for the result array (s) in
+ *      neural networks each time a new 
+ *      input is computed
+**********************************************/
+void zeroOutArray(int minIndex, int maxIndex, double[] arr){
+    for(int i = minIndex; i < maxIndex; i++){
+        arr[i] = 0.0;
+    }
+}
+
+/**********************************************
+ * layerSegment (PJ PROCESS)
+ * 
+ *      A layer segment does not spawn 
+ *      additional PJ processes. Neural
+ *      networks can create a ton of 
+ *      overhead, so the granularity
+ *      ends with a layer segment. 
+**********************************************/
+void layerSegment(layerSegmentComponent lsc){
+    // Right now this only reads one input then quits. 
+    // Need infinite loop with kill... or number of times
+    // passed in the lsc
+    double i;
+    zeroOutArray(lsc.minNode, lsc.maxNode, lsc.s);
+    alt(int node = lsc.minNode; node < lsc.maxNode; node++){
+        alt(int input = 0; input < lsc.inputChannels.size; input++){
+            i = lsc.inputChannels[input][node].read() : {
+                lsc.s[node] = lsc.s[n]
+            }
+        }
+    }
 }
 
 void FullyConnectedNeuralNetwork(const int inputSize, const int[] layerSizes){
@@ -56,6 +106,17 @@ void FullyConnectedNeuralNetwork(const int inputSize, const int[] layerSizes){
         s[i] = new double[upperSize];
         y[i] = new double[upperSize];
         errorStore[i] = new double[upperSize];
+        for(int j = 0; j < upperSize; j++){
+            b[i][j] = xavierInitialization(lowerSize);
+            bN[i][j] = b[i][j];
+            s[i][j] = 0;
+            y[i][j] = 0;
+            errorStore[i][j] = 0;
+            for(int k = 0; k < lowerSize; k++){
+                w[i][k][j] = xavierInitialization(lowerSize);
+                wN[i][k][j] = w[i][k][j];
+            }   
+        }
     }
 
     println("    - <FullyConnectedNeuralNetwork>: Checking allocations");
@@ -113,24 +174,22 @@ public void main(string[] args){
     layers[0] = 40; layers[1] = 20; layers[2] = 10;
 
     FullyConnectedNeuralNetwork(inputSize, layers);
-    println(xavierInitialization(728));
-    println(xavierInitialization(728));
-    println(xavierInitialization(728));
-    println(xavierInitialization(728));
-    println(xavierInitialization(728));
-    println(xavierInitialization(40));
-    println(xavierInitialization(40));
-    println(xavierInitialization(40));
-    println(xavierInitialization(40));
-    println(xavierInitialization(40));
-    println(xavierInitialization(20));
-    println(xavierInitialization(20));
-    println(xavierInitialization(20));
-    println(xavierInitialization(20));
-    println(xavierInitialization(20));
-    println(xavierInitialization(10));
-    println(xavierInitialization(10));
-    println(xavierInitialization(10));
-    println(xavierInitialization(10));
-    println(xavierInitialization(10));
+
 }
+
+
+
+/*
+ * First, initialize weights with value that is (centered around value 0 with variance 1)
+ * mean is 0, standard deviation is 1
+ * https://www.socscistatistics.com/utilities/normaldistribution/default.aspx
+ * https://www.calculatorsoup.com/calculators/statistics/variance-calculator.php
+ * 
+ * then, multiply value by sqrt(1/n) where n is the number of inputs to the node
+ * so, for a node in the first layer, it would be like (-0.2) * sqrt(1 / 728)
+ * 
+ * 
+ * 
+ * https://levelup.gitconnected.com/how-do-computers-generate-random-numbers-a72be65877f6
+ * make a library for random numbers
+ */

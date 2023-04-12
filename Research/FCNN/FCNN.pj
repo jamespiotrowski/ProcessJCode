@@ -9,12 +9,6 @@ import std.*;
 record layerSegmentComponent{
     int minNode                         // first node to compute
     , int maxNode                       // last node to compute
-    , chan<double>[][] inputChannels    // channels to read input from
-    , double[][] w                      // weights
-    , double[] b                        // bias
-    , double[] s                        // storage for summation
-    , double[] y                        // output for channels
-    , chan<double>[] outputChannls      // Channel to write out... needs to write nextLayerSize times
     , int nextLayerSize                 // Number of nodes to write to
 }
 
@@ -54,16 +48,24 @@ void zeroOutArray(int minIndex, int maxIndex, double[] arr){
  *      overhead, so the granularity
  *      ends with a layer segment. 
 **********************************************/
-void layerSegment(layerSegmentComponent lsc){
+void layerSegment(
+    layerSegmentComponent lsc
+    , chan<double>[][] inputChannels    // channels to read input from
+    , double[][] w                      // weights
+    , double[] b                        // bias
+    , double[] s                        // storage for summation
+    , double[] y                        // output for channels
+    , chan<double>[] outputChannls      // Channel to write out... needs to write nextLayerSize times
+){
     // Right now this only reads one input then quits. 
     // Need infinite loop with kill... or number of times
     // passed in the lsc
     double i;
-    zeroOutArray(lsc.minNode, lsc.maxNode, lsc.s);
+    zeroOutArray(lsc.minNode, lsc.maxNode, s);
     alt(int node = lsc.minNode; node < lsc.maxNode; node++){
         alt(int input = 0; input < lsc.inputChannels.size; input++){
-            i = lsc.inputChannels[input][node].read() : {
-                lsc.s[node] = lsc.s[n]
+            i = inputChannels[input][node].read() : {
+                s[node] = lsc.s[n]
             }
         }
     }

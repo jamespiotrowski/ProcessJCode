@@ -1,0 +1,47 @@
+import std.*;
+
+double apply(double d, int bypass){
+    switch(bypass){
+        case(0) : {
+            return exp(d);
+        }
+        default : {
+            return d;
+        }
+    }
+}
+
+void exponentiate(chan<double>.read in, chan<double>.write out, int iterations, int bypass){
+    double t;
+    for(int i = 0; i < iterations; i++){
+        t = in.read();
+        t = apply(t, bypass);
+        out.write(t);
+    }
+}
+
+void writer(chan<double>.write out, int iterations){
+    for(int i = 0; i < iterations; i++){
+        println("Writing: " + i);
+        out.write(i * 1.0);
+    }
+}
+
+void reader(chan<double>.read in, int iterations){
+    double r;
+    for(int i = 0; i < iterations; i++){
+        r = in.read();
+        println("Reading: " + r);
+    }
+}
+
+public void main(string[] args){
+    chan<double> in, out;
+    int iterations = 10;
+    int bypass = 0;
+    par{
+        exponentiate(in.read, out.write, iterations, bypass);
+        writer(in.write, iterations);
+        reader(out.read, iterations);
+    }
+}

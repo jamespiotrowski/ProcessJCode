@@ -1,15 +1,22 @@
 import std.*;
 
+// Make final eventually?
+public const int SIGMOID = 0;
+public const int TANH = 1;
+public const int LEAKYRELU = 2;
+public const int SOFTMAX = 3;
+public const int RELU = 4;
+
 /**********************************************
  * layerSegmentComponent
  * 
  *      record to store parameters needed
  *      for a layer segment
 **********************************************/
-record layerSegmentComponent{
-    int minNode                         // first node to compute
-    , int maxNode                       // last node to compute
-    , int nextLayerSize                 // Number of nodes to write to
+public record layerSegmentComponent{
+    int minNode;                       // first node to compute
+    int maxNode;                       // last node to compute
+    int nextLayerSize;                 // Number of nodes to write to
 }
 
 /**********************************************
@@ -40,6 +47,47 @@ void zeroOutArray(int minIndex, int maxIndex, double[] arr){
 }
 
 /**********************************************
+ * initializeArrayWithArray (FUNCTION)
+ * 
+ *      function to quickly reset an array
+ *      needed for the result array (s) in
+ *      neural networks each time a new 
+ *      input is computed
+**********************************************/
+void initializeArrayWithArray(int minIndex, int maxIndex, double[] arr, double[] vals){
+    for(int i = minIndex; i < maxIndex; i++){
+        arr[i] = vals[i];
+    }
+}
+
+/**********************************************
+ * sigmoid (FUNCTION)
+ * 
+ *      sigmoid function
+ *      static double Sigmoid(double d) { return (1.0 / (1.0 + exp(-d))); }
+**********************************************/
+double sigmoid(double d){
+    return (1.0 / (1.0 + exp(-d)));
+}
+
+/**********************************************
+ * activationFunction (FUNCTION)
+ * 
+ *      
+**********************************************/
+double activationFunction(double d, int af){
+    switch(af){
+        case(0) : { // Replace with SIGMOID if possible
+            return sigmoid(d);
+        }
+        default : {
+            //println("ERROR <activationFunction>: Activation Functions not selected.");
+            return 0.0;
+        }
+    }
+}
+
+/**********************************************
  * layerSegment (PJ PROCESS)
  * 
  *      A layer segment does not spawn 
@@ -50,28 +98,42 @@ void zeroOutArray(int minIndex, int maxIndex, double[] arr){
 **********************************************/
 void layerSegment(
     layerSegmentComponent lsc
-    , chan<double>[][] inputChannels    // channels to read input from
+    , chan<double>.read[][] inputChannels    // channels to read input from
     , double[][] w                      // weights
     , double[] b                        // bias
     , double[] s                        // storage for summation
     , double[] y                        // output for channels
-    , chan<double>[] outputChannls      // Channel to write out... needs to write nextLayerSize times
+    , chan<double>.write[][] outputChannels      // Channel to write out... needs to write nextLayerSize times
+    , int af
 ){
     // Right now this only reads one input then quits. 
     // Need infinite loop with kill... or number of times
     // passed in the lsc
     double i;
-    zeroOutArray(lsc.minNode, lsc.maxNode, s);
+    initializeArrayWithArray(lsc.minNode, lsc.maxNode, s, b); // Initializes all of s with bias values 
     alt(int node = lsc.minNode; node < lsc.maxNode; node++){
-        alt(int input = 0; input < lsc.inputChannels.size; input++){
+        alt(int input = 0; input < inputChannels.size; input++){
             i = inputChannels[input][node].read() : {
-                s[node] = lsc.s[n]
+                s[node] = s[node] + (w[input][node] * i);
             }
+        }
+    }
+    // Now we can compute activation function and write.
+    /* Write to next node.. this is complicated.
+        TODO: Determine if should be done with fors or pars (... or alts? Dont think alt to alt is possible)
+            Next layer will be waiting on ALTs... so for loop should be fine. 
+            Pars might be better, but I think too much overhead because each becomes PJ process
+    */
+    for(int node = lsc.minNode; node < lsc.maxNode; node++){
+        y[node] = activationFunction(s[node], af);
+        // for... par... alt???
+        for(int nextNode = 0; nextNode < lsc.nextLayerSize; nextNode++){
+            outputChannels[node][nextNode].write(y[node]);
         }
     }
 }
 
-void FullyConnectedNeuralNetwork(const int inputSize, const int[] layerSizes){
+void FullyConnectedNeuralNetwork(const int inputSize, const int[] layerSizes, int af){
     print("<FullyConnectedNeuralNetwork>: Creating Neural Network with input size: {" + inputSize + "} and shape: { ");
     for(int i = 0; i < layerSizes.size; i++){
         print(layerSizes[i] + " ");
@@ -175,7 +237,7 @@ public void main(string[] args){
     int[] layers = new int[numLayers];
     layers[0] = 40; layers[1] = 20; layers[2] = 10;
 
-    FullyConnectedNeuralNetwork(inputSize, layers);
+    FullyConnectedNeuralNetwork(inputSize, layers, SIGMOID);
 
 }
 

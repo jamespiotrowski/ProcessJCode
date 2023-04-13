@@ -1,7 +1,7 @@
 import std.*;
 
-public const int TEST1 = 0;
-public const int TEST2 = 1;
+const int TEST1 = 0;
+const int TEST2 = 1;
 
 public void main(string[] args){
     

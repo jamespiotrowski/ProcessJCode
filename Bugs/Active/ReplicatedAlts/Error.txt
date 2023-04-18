@@ -1,0 +1,31 @@
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/code/processj/processjcode/bugs/Active/ReplicatedAlts$ /mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pjc InputGuards.pj
+-- Setting absolute path, file and package name for 'InputGuards.pj'.
+-- Rewriting channel arrays local decls
+** COMPILATION COMPLITED SUCCESSFULLY **
+ProcessJ compilation successful
+/home/jamespiotrowski/workingpj/InputGuards.java:142: error: variable __booleanGuards1 is already defined in method run()
+                Boolean[] __booleanGuards1 = { true, true };
+                          ^
+/home/jamespiotrowski/workingpj/InputGuards.java:143: error: variable booleanGuards1 is already defined in method run()
+                List<Boolean> booleanGuards1 = Arrays.asList(__booleanGuards1);
+                              ^
+/home/jamespiotrowski/workingpj/InputGuards.java:145: error: variable __objectGuards1 is already defined in method run()
+                Object[] __objectGuards1 = { _pd$continueChannel1, _pd$killChannel2 };
+                         ^
+/home/jamespiotrowski/workingpj/InputGuards.java:146: error: variable objectGuards1 is already defined in method run()
+                List<Object> objectGuards1 = Arrays.asList(__objectGuards1);
+                             ^
+/home/jamespiotrowski/workingpj/InputGuards.java:148: error: variable ready0 is already defined in method run()
+                boolean ready0 = _ld$alt6.setGuards(booleanGuards1, objectGuards1);
+                        ^
+/home/jamespiotrowski/workingpj/InputGuards.java:161: error: variable selected0 is already defined in method run()
+                int selected0 = _ld$alt6.disable(_ld$index5);
+                    ^
+6 errors
+Java compilation successful
+Rewriting successful
+Instrumentation successful
+*.class : no such file or directory
+JAR file creation succesfull
+Output written to InputGuards.jar
+mv: cannot stat '/home/jamespiotrowski/workingpj/InputGuards.jar': No such file or directory

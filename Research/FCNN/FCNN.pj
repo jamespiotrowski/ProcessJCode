@@ -17,6 +17,7 @@ public record layerSegmentComponent{
     int minNode;                       // first node to compute
     int maxNode;                       // last node to compute
     int nextLayerSize;                 // Number of nodes to write to
+    int layerId;
 }
 
 /**********************************************
@@ -88,7 +89,34 @@ double activationFunction(double d, int af){
 }
 
 /**********************************************
- * layerSegment (PJ PROCESS)
+ * activationFunctionDerivative (FUNCTION)
+ * 
+ *      
+**********************************************/
+double activationFunctionDerivative(double d, int af){
+    switch(af){
+        case(0) : { // Replace with SIGMOID if possible
+            return (d * (1.0 - d));
+        }
+        default : {
+            //println("ERROR <activationFunction>: Activation Functions not selected.");
+            return 0.0;
+        }
+    }
+}
+
+/**********************************************
+ * inputLayerSegment (PJ PROCESS)
+ * 
+**********************************************/
+
+/**********************************************
+ * outputLayerSegment (PJ PROCESS)
+ * 
+**********************************************/
+
+/**********************************************
+ * hiddenLayerSegment (PJ PROCESS)
  * 
  *      A layer segment does not spawn 
  *      additional PJ processes. Neural
@@ -96,39 +124,89 @@ double activationFunction(double d, int af){
  *      overhead, so the granularity
  *      ends with a layer segment. 
 **********************************************/
-void layerSegment(
+void hiddenLayerSegment(
     layerSegmentComponent lsc
-    , chan<double>.read[][] inputChannels    // channels to read input from
+    , chan<double>.read[][] inputChannels       // channels to read input from... read previousLayerSize times
+    , chan<double>.write[][] outputChannels     // Channel to write out... needs to write nextLayerSize times
+    , chan<double>.read[] errorInChannels    // Channel to recieve error for bp ... needs to read nextLayerSize times
+    , chan<double>.write[] errorOutChannels   // Channel to write error for bp ... needs to write previousLayerSize times
     , double[][] w                      // weights
+    , double[][] wN                     // weights
     , double[] b                        // bias
+    , double[] bN                       // bias
     , double[] s                        // storage for summation
     , double[] y                        // output for channels
-    , chan<double>.write[][] outputChannels      // Channel to write out... needs to write nextLayerSize times
+    , double[] errorStore
     , int af
+    , chan<boolean>.read bpChannel      // Channel used to turn off back prop (or turn it on...) - perhaps use this for every input :) (for now)
+    , chan<boolean>.read killChannel    // Kill channel. uhhhh. Only one layer needs to write. Need layer id
 ){
-    // Right now this only reads one input then quits. 
-    // Need infinite loop with kill... or number of times
-    // passed in the lsc
-    double i;
-    initializeArrayWithArray(lsc.minNode, lsc.maxNode, s, b); // Initializes all of s with bias values 
-    alt(int node = lsc.minNode; node < lsc.maxNode; node++){
-        alt(int input = 0; input < inputChannels.size; input++){
-            i = inputChannels[input][node].read() : {
-                s[node] = s[node] + (w[input][node] * i);
+    boolean backProp;
+    boolean kill = false;
+    while(true){
+        // Determine if to take input or die
+        pri alt{
+            backProp = bpChannel.read() : { /* Why do I need this */ }
+            kill = killChannel.read() : {
+                if(kill){
+                    break; // or break?
+                }
+                else{
+                    continue; // is this in pj?
+                }
             }
         }
-    }
-    // Now we can compute activation function and write.
-    /* Write to next node.. this is complicated.
-        TODO: Determine if should be done with fors or pars (... or alts? Dont think alt to alt is possible)
-            Next layer will be waiting on ALTs... so for loop should be fine. 
-            Pars might be better, but I think too much overhead because each becomes PJ process
-    */
-    for(int node = lsc.minNode; node < lsc.maxNode; node++){
-        y[node] = activationFunction(s[node], af);
-        // for... par... alt???
-        for(int nextNode = 0; nextNode < lsc.nextLayerSize; nextNode++){
-            outputChannels[node][nextNode].write(y[node]);
+        
+        /**********************************/
+        /* FORWARD COMPUTATION            */
+        /**********************************/
+        double inp;
+        initializeArrayWithArray(lsc.minNode, lsc.maxNode, s, b); // Initializes all of s with bias values 
+        alt(int node = lsc.minNode; node < lsc.maxNode; node++){
+            alt(int input = 0; input < inputChannels.size; input++){
+                inp = inputChannels[input][node].read() : {
+                    s[node] = s[node] + inp;
+                }
+            }
+        }
+        // Now we can compute activation function and write.
+        /* Write to next node.. this is complicated.
+            TODO: Determine if should be done with fors or pars (... or alts? Dont think alt to alt is possible)
+                Next layer will be waiting on ALTs... so for loop should be fine. 
+                Pars might be better, but I think too much overhead because each becomes PJ process
+        */
+        for(int node = lsc.minNode; node < lsc.maxNode; node++){
+            y[node] = activationFunction(s[node], af);
+            // for... par... alt???
+            for(int nextNode = 0; nextNode < lsc.nextLayerSize; nextNode++){
+                outputChannels[node][nextNode].write(y[node] * w[node][nextNode]);
+            }
+        }
+
+        /**********************************/
+        /* BACKWARD COMPUTATION           */
+        /**********************************/
+        if(backProp){
+            // First we must read in errors and compute
+            double err;
+            zeroOutArray(lsc.minNode, lsc.maxNode, errorStore); // Initializes all with 0
+            // For each node in next layer
+            alt(int nextNode = 0; nextNode < lsc.nextLayerSize; nextNode++){
+                // Read the error
+                err = errorInChannels[nextNode].read() : {
+                    // Then for each node in the layer segment
+                    for(int node = lsc.minNode; node < lsc.maxNode; node++){
+                        wN[node][nextNode] = w[node][nextNode] - (err * y[node]);
+                        errorStore[node] = errorStore[node] + (err * w[node][nextNode]);
+                    }
+                }
+            }
+            // Update bias and write out
+            for(int node = lsc.minNode; node < lsc.maxNode; node++){
+                errorStore[node] = errorStore[node] * activationFunctionDerivative(y[node], af);
+                bN[node] = b[node] - errorStore[node];
+                errorOutChannels[node].write(errorStore[node]);
+            }
         }
     }
 }

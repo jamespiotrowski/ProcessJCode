@@ -1,0 +1,70 @@
+import std.*;
+
+void dieOrContinue(chan<boolean>.read continueChannel, chan<boolean>.read killChannel){
+    boolean kill = false, cont = true;
+    while(true){
+        pri alt{
+            // Option 1
+            cont = continueChannel.read() : {
+                if(cont) { 
+                    println("I have been told to continue!");
+                    continue; 
+                }
+                else { 
+                    println("I have been told not to continue...");
+                    break; 
+                }
+            }
+            // Option 2
+            kill = killChannel.read() : {
+                if(kill) { 
+                    println("I have been told to die...");
+                    break; 
+                }
+                else { 
+                    println("I have been told not to die!");
+                    continue; 
+                }
+            }
+        }
+    }
+}
+
+void deciderOfLife(int decision, chan<boolean>.write continueChannel, chan<boolean>.write killChannel){
+    if(decision == 0){
+        continueChannel.write(true);
+        continueChannel.write(true);
+        continueChannel.write(true);
+        killChannel.write(false);
+        killChannel.write(false);
+        killChannel.write(false);
+        killChannel.write(true);
+    } 
+    else {
+        killChannel.write(false);
+        killChannel.write(false);
+        killChannel.write(false);
+        continueChannel.write(true);
+        continueChannel.write(true);
+        continueChannel.write(true);
+        continueChannel.write(false);
+    }
+}
+
+public void main(string[] args){
+
+    chan<boolean> continueChannel;
+    chan<boolean> killChannel;
+
+    println("Test 1:");
+    par{
+        deciderOfLife(0, continueChannel.write, killChannel.write);
+        dieOrContinue(continueChannel.read, killChannel.read);
+    }
+
+    println("Test 2:");
+    par{
+        deciderOfLife(1, continueChannel.write, killChannel.write);
+        dieOrContinue(continueChannel.read, killChannel.read);
+    }
+}

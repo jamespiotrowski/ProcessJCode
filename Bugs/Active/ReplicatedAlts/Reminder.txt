@@ -1,0 +1,1 @@
+Two replicated alts in same process

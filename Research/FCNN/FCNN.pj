@@ -146,7 +146,7 @@ void hiddenLayerSegment(
     while(true){
         // Determine if to take input or die
         pri alt{
-            backProp = bpChannel.read() : { /* Why do I need this */ }
+            backProp = bpChannel.read() : {  }
             kill = killChannel.read() : {
                 if(kill){
                     break; // or break?
@@ -162,6 +162,7 @@ void hiddenLayerSegment(
         /**********************************/
         double inp;
         initializeArrayWithArray(lsc.minNode, lsc.maxNode, s, b); // Initializes all of s with bias values 
+        // NEED A FOR LOOP OUT HERE
         alt(int node = lsc.minNode; node < lsc.maxNode; node++){
             alt(int input = 0; input < inputChannels.size; input++){
                 inp = inputChannels[input][node].read() : {
@@ -186,11 +187,13 @@ void hiddenLayerSegment(
         /**********************************/
         /* BACKWARD COMPUTATION           */
         /**********************************/
+        
         if(backProp){
             // First we must read in errors and compute
             double err;
             zeroOutArray(lsc.minNode, lsc.maxNode, errorStore); // Initializes all with 0
             // For each node in next layer
+            // NEED A FOR LOOP ON OUTSIDE OF REPLICATED ALT
             alt(int nextNode = 0; nextNode < lsc.nextLayerSize; nextNode++){
                 // Read the error
                 err = errorInChannels[nextNode].read() : {
@@ -208,6 +211,7 @@ void hiddenLayerSegment(
                 errorOutChannels[node].write(errorStore[node]);
             }
         }
+         
     }
 }
 

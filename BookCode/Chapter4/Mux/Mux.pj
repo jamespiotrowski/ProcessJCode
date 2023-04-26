@@ -1,0 +1,37 @@
+import std.*;
+
+public void mux(chan<int>.read in0, chan<int>.read in1, chan<int>.read in2, chan<int>.write out, int lim) {
+    for(int i = 0; i < lim; i++){
+    //while (true) {
+        int x;
+        alt {
+            x = in0.read(): out.write(x);
+            x = in1.read(): out.write(x);
+            x = in2.read(): out.write(x);
+        }
+    }
+}
+
+void writer(chan<int>.write c, int limit, int seed){
+    for(int i = 0; i < limit; i++){
+        c.write(i + seed);
+    }
+}
+
+void reader(chan<int>.read out, int lim){
+    for(int i = 0; i < lim; i++){
+        println("Reading: " + out.read());
+    }
+}
+
+public void main(string[] args){
+    chan<int> in1, in2, in3, out;
+    int lim1 = 10, lim2 = 20, lim3 = 30;
+    par{
+        mux(in1.read, in2.read, in3.read, out.write, lim1 + lim2 + lim3);
+        writer(in1.write, lim1, 0);
+        writer(in2.write, lim2, 10);
+        writer(in3.write, lim3, 100);
+        reader(out.read, lim1 + lim2 + lim3);
+    }
+}

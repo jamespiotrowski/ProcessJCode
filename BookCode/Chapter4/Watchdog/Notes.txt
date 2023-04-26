@@ -1,0 +1,7 @@
+Pg 110
+    Bool should be boolean
+    t.timeout(t.read()+period) : panic.write(true);
+        - this code does not work. 
+
+pg 109
+    int vs. long on the timer

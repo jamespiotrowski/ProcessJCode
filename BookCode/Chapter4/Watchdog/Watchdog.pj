@@ -1,0 +1,50 @@
+import std.*;
+
+public void watchdog(const int period, chan<int>.read in, chan<int>.write out, chan<boolean>.write panic) {
+    while (true) {
+        timer t;
+        int v;
+        long p = t.read() + period;
+        boolean g;
+        alt {
+            v = in.read() : out.write(v);
+            t.timeout(p) : panic.write(true);
+        }
+    }
+}
+
+public void writer(chan<int>.write out, int maxPeriod){
+    timer tim;
+    long when;
+    for(int i = 0; i < maxPeriod; i++){
+        when = tim.read() + i;
+        tim.timeout(when);
+        out.write(i); 
+    }
+}
+
+void reader(chan<int>.read in, chan<boolean>.read panic){
+    int x;
+    boolean p;
+    while(true){
+        pri alt{
+            x = in.read() : {
+                println("Reading: " + x);
+            }
+            p = panic.read() : {
+                println("PANIC");
+                break;
+            }
+        }
+    }
+}
+
+public void main(string[] args){
+    chan<int> c1, c2;
+    chan<boolean> b1;
+    par{
+        reader(c2.read, b1.read);
+        writer(c1.write, 20);
+        watchdog(400, c1.read, c2.write, b1.write);
+    }
+}

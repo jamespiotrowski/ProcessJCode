@@ -1,0 +1,31 @@
+jamespiotrowski@LVJPSPCPHDV3:/mnt/c/Users/james/code/processj/processjcode/bookCode/Chapter4/SkipGuard$ /mnt/c/Users/james/Code/ProcessJ/Install/ProcessJ/pjc SkipGuards.pj
+-- Setting absolute path, file and package name for 'SkipGuards.pj'.
+-- Rewriting channel arrays local decls
+** COMPILATION COMPLITED SUCCESSFULLY **
+ProcessJ compilation successful
+/home/jamespiotrowski/workingpj/SkipGuards.java:95: error: variable __booleanGuards1 is already defined in method run()
+            Boolean[] __booleanGuards1 = { true, true };
+                      ^
+/home/jamespiotrowski/workingpj/SkipGuards.java:96: error: variable booleanGuards1 is already defined in method run()
+            List<Boolean> booleanGuards1 = Arrays.asList(__booleanGuards1);
+                          ^
+/home/jamespiotrowski/workingpj/SkipGuards.java:98: error: variable __objectGuards1 is already defined in method run()
+            Object[] __objectGuards1 = { PJAlt.SKIP, PJAlt.SKIP };
+                     ^
+/home/jamespiotrowski/workingpj/SkipGuards.java:99: error: variable objectGuards1 is already defined in method run()
+            List<Object> objectGuards1 = Arrays.asList(__objectGuards1);
+                         ^
+/home/jamespiotrowski/workingpj/SkipGuards.java:101: error: variable ready0 is already defined in method run()
+            boolean ready0 = _ld$alt5.setGuards(booleanGuards1, objectGuards1);
+                    ^
+/home/jamespiotrowski/workingpj/SkipGuards.java:114: error: variable selected0 is already defined in method run()
+            int selected0 = _ld$alt5.disable(_ld$index4);
+                ^
+6 errors
+Java compilation successful
+Rewriting successful
+Instrumentation successful
+*.class : no such file or directory
+JAR file creation succesfull
+Output written to SkipGuards.jar
+mv: cannot stat '/home/jamespiotrowski/workingpj/SkipGuards.jar': No such file or directory

@@ -1,0 +1,36 @@
+import std.*;
+
+// This is to test code in the book. if it compiles we are good.
+void pollChannel0(chan<int>.read c){
+    int x ;
+    pri alt{
+        x = c.read() : {}
+        skip : {}
+    }
+}
+
+// This is for testing
+void pollChannel1(chan<int>.read c){
+    // Just here to wait a little bit before trying to read
+    timer t;
+    long p = t.read() + 1000;
+    t.timeout(p);
+    // Poll time
+    int x ;
+    pri alt{
+        x = c.read() : println("Read: " + x);
+        skip : println("Channel is not ready!");
+    }
+}
+
+public void main(string[] args){
+    chan<int> c;
+    par{
+        pollChannel1(c.read);
+    }
+
+    par{
+        pollChannel1(c.read);
+        c.write.write(10);
+    }
+}

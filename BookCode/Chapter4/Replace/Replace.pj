@@ -1,0 +1,48 @@
+import std.*;
+/* */
+public void replace(chan<int>.read in, chan<int>.read inject, chan<int>.write out) {
+    for(int i = 0; i < 10; i++){
+    //while (true) {
+        int x;
+        pri alt {
+            x = inject.read() : {
+                par {
+                    int any = in.read(); // replace the next read 
+                    out.write(x);        // value on in by x.
+                }
+            }
+            x = in.read() :          // normal operation - 
+                out.write(x);          // simply copy through
+        }
+    }
+}
+
+public void writer(chan<int>.write out){
+    for(int i = 0; i < 10; i++){
+        out.write(i);
+    }
+}
+
+public void injector(chan<int>.write out){
+    out.write(947);
+}
+
+public void reader(chan<int>.read in){
+    int x;
+    for(int i = 0; i < 10; i++){
+    //while(true){
+        x = in.read();
+        println(x);
+    }
+}
+
+
+public void main(string[] args){
+    chan<int> in, out, inj;
+    par{
+        writer(in.write);
+        injector(inj.write);
+        replace(in.read, inj.read, out.write);
+        reader(out.read);
+    }
+}

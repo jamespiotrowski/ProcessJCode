@@ -1,0 +1,69 @@
+import std.*;
+
+void timeoutGuard(chan<long>.read in, chan<boolean>.write signal){
+    long howLong, when;
+    timer t;
+    while(true){
+        howLong = in.read();
+        when = t.read() + howLong;
+        t.timeout(when);
+        signal.write(true);
+    }
+}
+
+void count(const int period, chan<int>.read in, chan<int>.write out, chan<boolean>.read signal, chan<long>.write t_o) {
+    int seen = 0;
+    int any;
+    t_o.write(period);
+    boolean ready;
+    while (true) {
+        pri alt {
+            ready = signal.read(): {
+                out.write(seen);
+                seen = 0;
+                t_o.write(period);
+            }
+            any = in.read(): {
+                seen = seen + 1;
+                //println("Reading!");
+            }
+        }
+    }        
+}
+
+void writer(const int period, int slice, chan<int>.write out){
+    timer tim;
+    long when;
+    for(int i = 0; i < 100 * slice; i++){
+        //if(i % slice == 0){
+        //    println("Timing Out on " + i);
+        //    when = tim.read() + ( period / slice );
+        //    tim.timeout(when);
+        //}
+        //println("Writing " + i );
+        out.write(i);
+    }
+    println("Done");
+}
+
+void reader(chan<int>.read in){
+    int x;
+    while(true){
+        x = in.read();
+        println("Seen: " + x);
+    }
+}
+
+public void main(string[] args){
+    chan<int> c1, c2;
+    chan<long> tc;
+    chan<boolean> signal;
+    int period = 100;
+    int slice = 10000;
+    par{
+        timeoutGuard(tc.read, signal.write);
+        writer(period, slice, c1.write);
+        count(period, c1.read, c2.write, signal.read, tc.write);
+        reader(c2.read);
+    }
+}

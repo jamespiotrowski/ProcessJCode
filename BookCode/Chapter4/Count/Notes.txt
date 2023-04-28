@@ -1,0 +1,4 @@
+pg 113:
+	- t.timeout (should be tim.timeout)
+	- Bro, I dont think timeout guards are working the way you think...
+		- Im gonna implement a different version and we will see..

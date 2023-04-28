@@ -1,0 +1,97 @@
+import std.*;
+
+/**** Not in book - used for tesing ****/
+public void writer(chan<int>.write out){
+    /**** For FIFO6 ****/
+    for(int i = 0; i < 100; i++){
+        println("Writing: " + i);
+        out.write(i);
+    }
+}
+
+public void interjector(chan<int>.write out) {
+    out.write(-10);
+    println("Done");
+}
+
+public void blackHole(chan<int>.read in){
+    while(true){
+        int x;
+        x = in.read();
+        println("Black Hole: " + x); // For testing
+    }
+}
+
+/**************************************************
+    START BOOK CODE 
+**************************************************/
+public void id(chan<int>.read in, chan<int>.write out){
+    while(true){
+        int x;
+        x = in.read();
+        //println("id: " + x); // For testing
+        out.write(x);
+    }
+}
+
+public void succ(chan<int>.read in, chan<int>.write out){
+    while(true){
+        int x;
+        x = in.read();
+        out.write(x + 1);
+    }
+}
+
+public void delta(chan<int>.read in, chan<int>.write out1, chan<int>.write out2){
+    while(true){
+        int x;
+        x = in.read();
+        par{
+            out1.write(x);
+            out2.write(x);
+        }
+    }
+}
+
+public void prefix(const int n, chan<int>.read in, chan<int>.write out){
+    out.write(n);
+    id(in,out);
+}
+
+public void replace(chan<int>.read in, chan<int>.read inject, chan<int>.write out) {
+    for(int i = 0; i < 10; i++){
+    //while (true) {
+        int x;
+        pri alt {
+            x = inject.read() : {
+                par {
+                    int any = in.read(); // replace the next read 
+                    out.write(x);        // value on in by x.
+                }
+            }
+            x = in.read() :          // normal operation - 
+                out.write(x);          // simply copy through
+        }
+    }
+}
+
+public void numbers_reset(chan<int>.write out, chan<int>.read reset) {
+    chan<int> a, b, c, d;
+    par {
+        prefix(0, d.read, a.write);
+        replace(a.read, reset, b.write);
+        delta(b.read, out, c.write);
+        succ (c.read, d.write);
+    }
+}
+
+
+public void main(string[] args){
+    chan<int> reset, c1;
+
+    par{
+        interjector(reset.write);
+        numbers_reset(c1.write, reset.read);
+        blackHole(c1.read);
+    }
+}

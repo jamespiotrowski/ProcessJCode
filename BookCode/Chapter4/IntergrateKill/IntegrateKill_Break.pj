@@ -1,0 +1,49 @@
+import std.*;
+
+void deciderOfLifeAndDeath(chan<int>.write out, chan<boolean>.write kill){
+    for(int i = 0; i < 100; i++){
+        out.write(i);
+    }
+    kill.write(true);
+    println("deciderOfLifeAndDeath Terminating");
+}
+
+public void blackHole(chan<int>.read in){
+    int x;
+    boolean any;
+    while(true){
+        x = in.read();
+        println("Black Hole: " + x); // For testing
+        if(x > 4851){
+            break;
+        }
+    }
+    println("Blackhole Terminating");
+}
+
+
+public void integrate_kill(chan<int>.read in, chan<int>.write out, chan<boolean>.read kill) {
+    int total = 0;
+    int x;
+    boolean any;
+    while (true) {
+        pri alt {
+            any = kill.read() : break;
+            x = in.read()     : {
+                total = total + x;
+                out.write(total);
+            }
+        }
+    }
+}
+
+
+public void main(string[] args){
+    chan<int> c1, c2;
+    chan<boolean> kill;
+    par{
+        deciderOfLifeAndDeath(c1.write, kill.write);
+        integrate_kill(c1.read, c2.write, kill.read);
+        blackHole(c2.read);
+    }
+}

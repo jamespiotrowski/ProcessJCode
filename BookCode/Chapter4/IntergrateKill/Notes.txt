@@ -1,0 +1,5 @@
+pg 114:
+    bool should be boolean
+    there is no x declared
+    in the boolean implementation there is no "any" var
+        - shouldnt we just have running read and do a skip???

@@ -1,0 +1,105 @@
+import std.*;
+
+void deciderOfLifeAndDeath(chan<int>.write out, chan<int>.write kill){
+    for(int i = 0; i < 100; i++){
+        out.write(i);
+    }
+    kill.write(-947);
+    println("deciderOfLifeAndDeath Terminating");
+}
+
+public void blackHole(chan<int>.read in){
+    int x;
+    boolean any;
+    while(true){
+        x = in.read();
+        println("Black Hole: " + x); // For testing
+        if(x == -947){
+            break;
+        }
+    }
+    println("Blackhole Terminating");
+}
+
+public void id(chan<int>.read in, chan<int>.write out){
+    while(true){
+        int x;
+        x = in.read();
+        if(x == -947){
+            break;
+        }
+        println("id: " + x); // For testing
+        out.write(x);
+    }
+}
+
+
+public void plus(chan<int>.read in1, chan<int>.read in2, chan<int>.write out){
+    while(true){
+        int x1, x2;
+        par{
+            x1 = in1.read();
+            x2 = in2.read();
+        }
+        if(x1 == -947){ out.write(-947); break; }
+        // if(x2 == -947){ out.write(-947); break; }
+        out.write(x1 + x2);
+    }
+}
+
+public void delta(chan<int>.read in, chan<int>.write out1, chan<int>.write out2){
+    while(true){
+        int x;
+        x = in.read();
+        if(x == -947){
+            out1.write(-947);
+            out2.write(-947);
+            break;
+        }
+        par{
+            out1.write(x);
+            out2.write(x);
+        }
+    }
+}
+
+public void prefix(const int n, chan<int>.read in, chan<int>.write out){
+    out.write(n);
+    id(in,out);
+}
+
+public void killer(chan<int>.read in, chan<int>.read kill, chan<int>.write out){
+    int x;
+    while(true){
+        pri alt{
+            x = kill.read() : {
+                out.write(-947); // Poison
+                break;
+            }
+            x = in.read() : {
+                out.write(x);
+            }
+        }
+    }
+    println("Killer done");
+}
+
+public void integrate(chan<int>.read in, chan<int>.write out, chan<int>.read kill) {
+    chan<int> a, b, c, d;
+    par {
+        killer(in, kill, d.write);
+        plus(d.read, c.read, a.write);
+        delta(a.read, out, b.write);
+        prefix(0, b.read, c.write);
+    }
+}
+
+public void main(string[] args){
+    chan<int> c1, c2;
+    chan<int> kill;
+    par{
+        deciderOfLifeAndDeath(c1.write, kill.write);
+        integrate(c1.read, c2.write, kill.read);
+        blackHole(c2.read);
+    }
+}

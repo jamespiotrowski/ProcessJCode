@@ -1,0 +1,41 @@
+import std.*;
+
+public void interjector(chan<int>.write out) {
+    out.write(-10);
+    println("Done");
+}
+
+public void blackHole(chan<int>.read in){
+    while(true){
+        int x;
+        x = in.read();
+        println("Black Hole: " + x); // For testing
+    }
+}
+
+/**************************************************
+    START BOOK CODE 
+**************************************************/
+
+public void numbers_reset(chan<int>.write out, chan<int>.read reset) {
+    int n = 0;
+    while (true) {
+        pri alt {
+            n = reset.read() : skip;
+            skip             : skip;
+        }
+        out.write(n);
+        n = n + 1;
+    }
+}
+
+
+public void main(string[] args){
+    chan<int> reset, c1;
+
+    par{
+        interjector(reset.write);
+        numbers_reset(c1.write, reset.read);
+        blackHole(c1.read);
+    }
+}

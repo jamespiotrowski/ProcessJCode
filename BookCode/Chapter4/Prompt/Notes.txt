@@ -1,0 +1,2 @@
+Pg 118:
+    - bool should be boolean

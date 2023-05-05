@@ -1,0 +1,56 @@
+import std.*;
+
+void writer(chan<int>.write out, int j, boolean wait){        
+    timer t;
+    long w = t.read() + 100;
+    string g = "";
+    if(wait){
+        g = " (waited)";
+        t.timeout(w);
+    }
+    out.write(j);
+    println("Writer done" + g);
+}
+
+void reader(chan<int>.read in){
+    int x;    
+    //while(true){
+    for(int i = 0; i < 100; i++) {
+        x = in.read();
+        println("Read: " + x);
+    }
+}
+
+public void mem_cell2(boolean allowReset, chan<int>.read in, chan<int>.read reset, chan<int>.write out, chan<boolean>.read request) {
+    int x;
+    boolean b;
+    while (true) {
+      alt {
+        (allowReset) && x = reset.read():   skip;
+        x = in.read():                      skip;
+        b = request.read():                 out.write(x);
+      }
+    }
+  }    
+
+public void prompt(chan<boolean>.write request, chan<int>.read in, chan<int>.write out) {
+    int x;
+    while (true) {
+        request.write(true);
+        x = in.read();
+        out.write(x);
+    }
+} 
+
+public void main(string[] args){
+    chan<int> c1, c2, c3, reset;
+    chan<boolean> r;
+    par{
+        writer(c1.write, 10, false);
+        writer(reset.write, 947, true);
+        mem_cell2(false, c1.read, reset.read, c2.write, r.read);
+        //mem_cell2(true, c1.read, reset.read, c2.write, r.read);
+        prompt(r.write, c2.read, c3.write);
+        reader(c3.read);
+    }
+}

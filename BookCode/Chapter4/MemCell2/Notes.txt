@@ -1,0 +1,3 @@
+Pg 119:
+    - bool should be boolean
+    - there is no request channel anymore?

@@ -1,0 +1,46 @@
+import std.*;
+
+void writer(chan<int>.write out){
+    timer t;
+    long w;
+    for(int i = 0; i < 10; i++){
+        w = t.read() + 10;
+        t.timeout(w);
+        out.write(i);
+    }
+    println("Writer done");
+}
+
+void requester(chan<int>.read in, chan<boolean>.write request){
+    int x;    
+    timer t;
+    long w;
+    w = t.read() + 10;
+    t.timeout(w);
+    par{
+        request.write(true);
+        x = in.read();
+    }
+    println("Read: " + x);
+}
+
+public void memcell(chan<int>.read in, chan<int>.write out, chan<boolean>.read request) {
+    int x;
+    while (true) {
+        boolean any;
+        alt {
+            x = in.read()        : skip;
+            any = request.read() : out.write(x);
+        }
+    }
+}
+
+public void main(string[] args){
+    chan<int> c1, c2;
+    chan<boolean> r;
+    par{
+        writer(c1.write);
+        memcell(c1.read, c2.write, r.read);
+        requester(c2.read, r.write);
+    }
+}

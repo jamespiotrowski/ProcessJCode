@@ -1,0 +1,8 @@
+pg 122:
+    - bool should be boolean
+    - "&" should be "&&"
+
+pg 123:
+    - bool should be boolean
+    - I dont think the prompt params line up with the previous Code
+    - buffer params a little mixed up too

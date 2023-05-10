@@ -1,0 +1,72 @@
+import std.*;
+
+public void buffer(const int max, chan<int>.read in, chan<int>.write out, chan<boolean>.read request) {
+    int hold[] = new int[max];
+    int lo = 0;
+    int hi = 0;
+    int size = 0; // size = hi-lo (modulo wrap-around)
+    while (true) {
+        boolean any;
+        alt {
+            // Store something in the buffer
+            (size < max) && hold[hi] = in.read(): {
+                hi = (hi + 1) % max;
+                size = size + 1;
+            }
+            // Write something out of the buffer
+            (size > 0) && any = request.read(): {
+                out.write(hold[lo]);
+                lo = (lo + 1) % max;
+                size = size - 1;
+            }
+        }
+    }
+}   
+
+/*
+  // No output guards
+
+  (size > 0) && out.write(hold[lo]): {
+    lo = (lo + 1) % max;
+    size = size - 1;
+  }
+*/
+
+public void prompt(chan<boolean>.write request, chan<int>.read in, chan<int>.write out) {
+    int x;
+    while (true) {
+        request.write(true);
+        x = in.read();
+        out.write(x);
+    }
+} 
+
+public void new_buffer(const int max, chan<int>.read in, chan<int>.write out) {
+    chan<boolean> request;
+    chan<int> answer;
+    par {
+        buffer(max, in, answer.write, request.read);
+        prompt(request.write, answer.read, out);
+    }
+}
+
+public void writerAndReader(chan<int>.write out, chan<int>.read in, int v){
+    for(int i = 0; i < v; i++){
+        out.write(i);
+        println("Writing: " + i);
+    }
+    int x;
+    for(int i = 0; i < v; i++){
+        x = in.read();
+        println("Reading: " + x);
+    }
+}
+
+public void main(string[] args){
+    chan<int> c1, c2;
+    par{
+        new_buffer(5, c1.read, c2.write);
+        writerAndReader(c1.write, c2.read, 5);
+    }
+
+}

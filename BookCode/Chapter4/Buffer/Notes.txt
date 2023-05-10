@@ -6,3 +6,6 @@ pg 123:
     - bool should be boolean
     - I dont think the prompt params line up with the previous Code
     - buffer params a little mixed up too
+
+pg 124:
+    - i < (max - 1) -- For loop
